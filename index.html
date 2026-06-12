@@ -2,22 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TEMU FORTNITE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TEMU FORTNITE: ULTIMATE NETWORKING EDITION</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
     <style>
-        /* =========================================
-           UI & CSS STYLING
-           ========================================= */
+        /* ========================================================================
+           COMPREHENSIVE DESIGN ARCHITECTURE & RESPONSIVE GAME UI
+           ======================================================================== */
         :root {
-            --theme-primary: #f97316;
-            --theme-dark: #090e17; /* Darkened Theme */
-            --theme-light: #f8fafc;
-            --theme-accent: #3b82f6;
-            --rarity-common: #94a3b8;
+            --emerald-forest: #0a2f1d;
+            --neon-matrix: #22c55e;
+            --mana-purple: #a855f7;
+            --shield-blue: #3b82f6;
+            --health-red: #ef4444;
+            --panel-blur-bg: rgba(6, 20, 10, 0.92);
+            --rarity-common: #cbd5e1;
             --rarity-rare: #3b82f6;
             --rarity-legendary: #fbbf24;
         }
@@ -28,1615 +31,1578 @@
             -webkit-user-select: none;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Impact, Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Courier New', Courier, monospace;
         }
 
         body, html {
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: var(--theme-dark);
-            touch-action: none; /* Crucial for custom multi-touch */
+            background-color: #020a04;
+            touch-action: none;
         }
 
-        #canvas-container {
+        #canvas-viewport {
             width: 100%;
             height: 100%;
             position: absolute;
-            left: 0;
-            top: 0;
+            left: 0; top: 0;
             z-index: 1;
         }
 
-        /* Lobby & Menus */
-        #lobby-overlay {
+        /* Deployment Control Screen */
+        #deployment-lobby {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(9,14,23,0.95), rgba(0,0,0,1));
-            z-index: 100;
+            background: radial-gradient(circle at center, #0f3d1e, #020803);
+            z-index: 500;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: var(--theme-light);
-            backdrop-filter: blur(8px);
+            color: #f8fafc;
         }
 
-        .main-panel {
-            background: rgba(15, 23, 42, 0.95);
-            border: 3px solid var(--theme-primary);
-            border-radius: 16px;
+        .lobby-panel {
+            background: var(--panel-blur-bg);
+            border: 3px solid var(--neon-matrix);
+            border-radius: 12px;
             padding: 40px;
-            width: 90%;
-            max-width: 550px;
+            width: 92%;
+            max-width: 650px;
             text-align: center;
-            box-shadow: 0 0 50px rgba(249, 115, 22, 0.3), inset 0 0 30px rgba(0,0,0,0.9);
-            transform: scale(0.95);
-            opacity: 0; 
+            box-shadow: 0 0 50px rgba(34, 197, 94, 0.3);
         }
 
-        .title-glitch {
-            font-size: 3.8rem;
-            margin-bottom: 5px;
-            color: var(--theme-primary);
+        .main-title {
+            font-size: 3.2rem;
+            color: var(--neon-matrix);
             text-transform: uppercase;
-            letter-spacing: 4px;
-            text-shadow: 4px 4px 0px rgba(255,255,255,0.05);
             font-weight: 900;
-            font-style: italic;
+            letter-spacing: 4px;
+            margin-bottom: 5px;
+            text-shadow: 3px 3px 0px #000;
         }
 
         .subtitle {
-            color: #cbd5e1;
-            margin-bottom: 30px;
-            font-size: 1.2rem;
+            color: #86efac;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
             letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
-        input {
-            width: 100%; padding: 18px; margin: 12px 0;
-            border-radius: 8px; border: 2px solid #1e293b;
-            background: rgba(9, 14, 23, 0.8); color: white;
-            font-size: 1.2rem; text-align: center;
-            transition: border-color 0.3s;
-        }
-        
-        input:focus { 
-            outline: none; 
-            border-color: var(--theme-primary); 
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
         }
 
-        .btn-primary {
-            width: 100%; padding: 20px;
-            background: linear-gradient(45deg, var(--theme-primary), #ea580c);
-            color: white; border: none; border-radius: 8px;
-            font-weight: 900; font-size: 1.4rem;
-            cursor: pointer; margin-top: 20px;
-            text-transform: uppercase; letter-spacing: 2px;
-            box-shadow: 0 6px 0 #9a3412;
-            transition: transform 0.1s, box-shadow 0.1s;
-        }
-        
-        .btn-primary:active {
-            transform: translateY(6px);
-            box-shadow: 0 0px 0 #9a3412;
+        .input-label {
+            display: block;
+            font-size: 0.8rem;
+            color: #4ade80;
+            margin-bottom: 5px;
+            text-transform: uppercase;
         }
 
-        /* Laptop Controls Toggle */
-        #btn-laptop {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(15, 23, 42, 0.8);
-            border: 2px solid var(--theme-accent);
-            color: white;
-            padding: 10px 20px;
+        .ui-input {
+            width: 100%; padding: 14px;
+            border-radius: 6px; border: 2px solid #16a34a;
+            background: #020a02; color: #fff;
+            font-size: 1.1rem; text-align: center;
+            outline: none;
+        }
+
+        .tier-select-container {
+            display: flex; gap: 10px; margin: 15px 0;
+        }
+
+        .tier-tab {
+            flex: 1; padding: 12px; background: rgba(255,255,255,0.05);
+            border: 2px solid #15803d; border-radius: 6px; color: #fff;
+            cursor: pointer; font-weight: bold; font-size: 0.85rem; text-transform: uppercase;
+        }
+
+        .tier-tab.active[data-tier="common"] { border-color: var(--rarity-common); color: var(--rarity-common); background: rgba(203, 213, 225, 0.1); }
+        .tier-tab.active[data-tier="rare"] { border-color: var(--rarity-rare); color: var(--rarity-rare); background: rgba(59, 130, 246, 0.1); }
+        .tier-tab.active[data-tier="legendary"] { border-color: var(--rarity-legendary); color: var(--rarity-legendary); background: rgba(251, 191, 36, 0.1); }
+
+        .btn-deploy {
+            width: 100%; padding: 18px;
+            background: linear-gradient(135deg, #22c55e, #15803d);
+            color: white; border: none; border-radius: 6px;
+            font-weight: bold; font-size: 1.4rem;
+            cursor: pointer; margin-top: 15px;
+            box-shadow: 0 5px 0 #14532d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-deploy:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #14532d;
+        }
+
+        /* Dynamic HUD Architecture */
+        .game-hud-layer {
+            position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 10;
+            display: flex; flex-direction: column;
+            justify-content: space-between; padding: 25px;
+        }
+
+        .hud-interactive { pointer-events: auto; }
+
+        .hud-header { display: flex; justify-content: space-between; width: 100%; }
+
+        /* Semantic Chat Architecture */
+        #chat-container {
+            width: 360px;
+            height: 260px;
+            background: rgba(4, 15, 6, 0.88);
+            border: 2px solid #16a34a;
             border-radius: 8px;
-            font-weight: bold;
-            z-index: 50;
-            cursor: pointer;
-            backdrop-filter: blur(5px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            transition: all 0.2s;
-        }
-        
-        #btn-laptop:hover {
-            background: rgba(59, 130, 246, 0.4);
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
         }
 
-        .render-link-btn {
-            background: transparent;
-            color: var(--theme-accent);
-            border: 1px solid var(--theme-accent);
-            padding: 12px; border-radius: 6px;
-            margin-top: 25px; cursor: pointer;
-            font-size: 1rem; transition: background 0.2s;
-        }
-        
-        .render-link-btn:hover { 
-            background: rgba(59, 130, 246, 0.2); 
+        #chat-output-pool {
+            flex-grow: 1;
+            overflow-y: auto;
+            color: #f1f5f9;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
-        /* HUD Structure */
-        .hud-layer {
-            position: absolute; z-index: 10; pointer-events: none;
-            width: 100%; height: 100%; display: flex; flex-direction: column;
-            justify-content: space-between; padding: 20px;
+        .chat-row { background: rgba(0,0,0,0.25); padding: 5px 8px; border-radius: 4px; border-left: 3px solid #22c55e; }
+        .chat-row.sys { border-left-color: #eab308; color: #facc15; font-weight: bold; }
+        .chat-row.err { border-left-color: #ef4444; color: #f87171; font-weight: bold; }
+
+        #chat-input-node {
+            width: 100%; padding: 10px;
+            background: #000; border: 1px solid #22c55e;
+            color: #fff; border-radius: 4px; font-size: 0.85rem;
+            outline: none;
         }
 
-        .interactive { pointer-events: auto; }
-
-        .hud-top { display: flex; justify-content: space-between; width: 100%; margin-top: 50px; }
-
-        .leaderboard {
-            background: rgba(9, 14, 23, 0.85);
-            border-left: 5px solid var(--theme-primary);
-            padding: 15px; border-radius: 0 8px 8px 0;
-            color: white; min-width: 220px;
-            backdrop-filter: blur(6px);
-        }
-        
-        .leaderboard h3 { font-size: 1.2rem; margin-bottom: 12px; letter-spacing: 1px; }
-        .lb-entry { display: flex; justify-content: space-between; font-size: 1rem; margin-bottom: 8px; }
-
-        .player-stats {
-            background: rgba(9, 14, 23, 0.85);
-            padding: 15px 30px; border-radius: 8px; color: white; text-align: right;
-            border-right: 5px solid var(--theme-primary);
-            backdrop-filter: blur(6px);
-        }
-        
-        .stat-health { font-size: 1.6rem; font-weight: bold; color: #4ade80; }
-        .stat-shield { font-size: 1.4rem; font-weight: bold; color: #60a5fa; margin-bottom: 5px; }
-        .weapon-info { margin-top: 12px; font-size: 1.1rem; color: #cbd5e1; }
-        
-        .tier-legendary { color: var(--rarity-legendary); font-weight: bold; text-shadow: 0 0 8px rgba(251, 191, 36, 0.6); }
-        .tier-rare { color: var(--rarity-rare); font-weight: bold; }
-        .tier-common { color: var(--rarity-common); font-weight: bold; }
-
-        /* Bottom HUD & Mobile Controls */
-        .hud-bottom { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: flex-end; 
-            width: 100%; 
-            height: 50%;
+        /* Modular Status Dash */
+        .vitals-dashboard {
+            background: var(--panel-blur-bg); padding: 20px;
+            border-radius: 8px; border-left: 5px solid var(--neon-matrix);
+            color: white; width: 260px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
         }
 
-        /* Dynamic Joystick (Hidden by default, spawned on touch) */
-        #dynamic-joystick {
-            position: absolute;
-            width: 140px; height: 140px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            display: none; 
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            z-index: 20;
-        }
-        
-        #dynamic-knob {
-            width: 50px; height: 50px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 50%; 
-            position: absolute;
-            left: 45px; top: 45px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        .vital-title { font-size: 0.75rem; margin-top: 6px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; }
+        .vital-title.hp-lbl { color: var(--health-red); }
+        .vital-title.sh-lbl { color: var(--shield-blue); }
+        .vital-title.mn-lbl { color: var(--mana-purple); }
+
+        .progress-bar-track { width: 100%; height: 14px; background: #1e293b; border-radius: 4px; margin: 4px 0; overflow: hidden; border: 1px solid #334155; }
+        .fill-node-hp { width: 100%; height: 100%; background: linear-gradient(90deg, #dc2626, #ef4444); transition: width 0.15s; }
+        .fill-node-sh { width: 100%; height: 100%; background: linear-gradient(90deg, #2563eb, #3b82f6); transition: width 0.15s; }
+        .fill-node-mn { width: 50%; height: 100%; background: linear-gradient(90deg, #7c3aed, #a855f7); transition: width 0.15s; } /* Tracking max 200% */
+
+        .loadout-indicator { font-size: 0.8rem; color: #fbbf24; margin-top: 8px; border-top: 1px solid #14532d; padding-top: 6px; font-weight: bold; }
+
+        /* Trackpad Boundary Modules */
+        #trackpad-move-boundary { position: absolute; left: 0; bottom: 0; width: 45%; height: 65%; }
+        #trackpad-look-boundary { position: absolute; right: 0; bottom: 0; width: 55%; height: 80%; }
+
+        /* Grid Action Triggers */
+        .action-button-matrix {
+            position: absolute; right: 30px; bottom: 30px;
+            display: flex; flex-direction: column; gap: 14px;
+            align-items: flex-end;
         }
 
-        .action-cluster { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 20px; 
-            position: absolute;
-            right: 30px;
-            bottom: 30px;
-        }
-        
-        .action-btn {
-            width: 85px; height: 85px; border-radius: 50%;
-            background: rgba(15, 23, 42, 0.75);
-            border: 3px solid rgba(255, 255, 255, 0.4);
-            color: white; font-weight: bold; font-size: 1.1rem;
-            display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-            transition: background 0.1s;
-        }
-        
-        .action-btn:active { 
-            transform: scale(0.9); 
-            background: rgba(15, 23, 42, 0.95); 
-        }
-        
-        #fire-btn { 
-            background: rgba(249, 115, 22, 0.8); 
-            width: 110px; height: 110px; 
-            font-size: 1.4rem; 
-            border-color: var(--theme-primary); 
-        }
-        
-        #fire-btn:active { 
-            background: rgba(194, 65, 12, 1); 
+        .horizontal-subgroup { display: flex; gap: 12px; }
+
+        .action-circle-node {
+            width: 76px; height: 76px; border-radius: 50%;
+            background: rgba(8, 28, 12, 0.9); border: 2px solid rgba(34, 197, 94, 0.4);
+            color: white; font-weight: bold; font-size: 0.8rem;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.7);
+            text-shadow: 1px 1px 2px #000;
         }
 
-        /* Crosshair */
-        #reticle {
+        .action-circle-node:active { transform: scale(0.9); border-color: var(--neon-matrix); }
+        #node-trigger-fire { width: 100px; height: 100px; background: #991b1b; border-color: #ef4444; font-size: 1.1rem; }
+        #node-trigger-move { background: #1e3a8a; border-color: #3b82f6; }
+
+        /* Reticle Centering */
+        #game-reticle {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 28px; height: 28px; pointer-events: none; z-index: 5;
+            width: 24px; height: 24px; pointer-events: none;
         }
-        
-        .reticle-line { position: absolute; background: rgba(255,255,255,1); box-shadow: 0 0 3px black; }
-        .rt-h { top: 13px; left: 0; width: 28px; height: 2px; }
-        .rt-v { top: 0; left: 13px; width: 2px; height: 28px; }
-        .rt-dot { top: 12px; left: 12px; width: 4px; height: 4px; border-radius: 50%; background: #ef4444; position: absolute; }
+        .reticle-hair { position: absolute; background: #fff; box-shadow: 0 0 3px #000; }
+        .hair-w { top: 11px; left: 0; width: 24px; height: 2px; }
+        .hair-h { top: 0; left: 11px; width: 2px; height: 24px; }
+        .hair-center { top: 10px; left: 10px; width: 4px; height: 4px; background: #22c55e; border-radius: 50%; }
 
-        /* Killfeed */
-        #killfeed {
-            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-            display: flex; flex-direction: column; gap: 8px; pointer-events: none;
-        }
-        
-        .kill-msg {
-            background: rgba(0,0,0,0.7); color: white; padding: 8px 20px;
-            border-radius: 6px; font-size: 1rem; font-weight: bold; text-align: center;
-            border-bottom: 3px solid var(--theme-primary);
+        /* Elimination System Canvas Frame */
+        .termination-screen-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(4, 12, 5, 0.96); z-index: 1000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: white; display: none;
         }
 
+        /* Virtual Trackpad Node */
+        #virtual-joystick-housing {
+            position: absolute; width: 100px; height: 100px;
+            background: rgba(255,255,255,0.06); border: 3px solid rgba(34, 197, 94, 0.3);
+            border-radius: 50%; display: none; pointer-events: none; z-index: 100;
+            transform: translate(-50%, -50%);
+        }
+        #virtual-joystick-puck {
+            position: absolute; top: 28px; left: 28px; width: 44px; height: 44px;
+            background: rgba(255, 255, 255, 0.85); border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body>
 
-    <div id="lobby-overlay" class="interactive">
-        <div class="main-panel" id="main-panel">
-            <h1 class="title-glitch">TEMU FORTNITE</h1>
-            <p class="subtitle">Drop In. Gear Up. Survive.</p>
-            
-            <input type="text" id="player-name" placeholder="Enter Username" value="Guest" maxlength="12">
-            <input type="text" id="room-code" placeholder="Room Code (Leave blank for Solo)" maxlength="8">
-            
-            <button class="btn-primary" id="btn-deploy">DEPLOY TO ISLAND</button>
-            
-            <button class="render-link-btn" id="btn-copy-link">
-                🔗 Copy Server Render Link to Invite
-            </button>
-            <div id="link-toast" style="display:none; color:#4ade80; font-size:0.9rem; margin-top:10px;">Link Copied to Clipboard!</div>
+    <div id="canvas-viewport"></div>
 
-            <div style="color: #94a3b8; font-size: 0.9rem; margin-top: 30px; line-height: 1.6;">
-                <strong>LAPTOP MODE:</strong> WASD Move | Mouse Look | Left Click Fire<br>
-                <strong>MOBILE MODE:</strong> Left side Move | Right side Drag Look & Pinch Zoom | Tap Buttons
+    <div id="deployment-lobby" class="hud-interactive">
+        <div class="lobby-panel">
+            <h1 class="main-title">Temu Fortnite</h1>
+            <div class="subtitle">Multiplayer Sync & Semantic AI Engine</div>
+            
+            <div class="input-group">
+                <label class="input-label">Operational Callsign</label>
+                <input type="text" id="node-player-identity" class="ui-input" value="SurvivorPlayer">
             </div>
-        </div>
-    </div>
 
-    <button id="btn-laptop" class="interactive">💻 LAPTOP CONTROLS</button>
-
-    <div class="hud-layer">
-        <div id="killfeed"></div>
-
-        <div class="hud-top">
-            <div class="leaderboard interactive">
-                <h3>🏆 SQUAD KILLS</h3>
-                <div id="leaderboard-data">
-                    </div>
-            </div>
-            
-            <div class="player-stats interactive">
-                <div class="stat-shield" id="ui-shield">SHIELD: 50</div>
-                <div class="stat-health" id="ui-health">HP: 100</div>
-                <div class="weapon-info" id="ui-weapon">
-                    WEAPON: <span class="tier-common">Basic Blaster</span>
+            <div class="input-group">
+                <label class="input-label">Select Tier Specialization</label>
+                <div class="tier-select-container">
+                    <button class="tier-tab active" data-tier="common">Common</button>
+                    <button class="tier-tab" data-tier="rare">Rare</button>
+                    <button class="tier-tab" data-tier="legendary">Legendary</button>
                 </div>
             </div>
+            
+            <button class="btn-deploy" id="btn-execute-deployment">Deploy Network Link</button>
         </div>
+    </div>
 
-        <div id="reticle">
-            <div class="reticle-line rt-h"></div>
-            <div class="reticle-line rt-v"></div>
-            <div class="rt-dot"></div>
-        </div>
-
-        <div class="hud-bottom">
-            <div id="dynamic-joystick">
-                <div id="dynamic-knob"></div>
+    <div class="game-hud-layer">
+        <div class="hud-header">
+            <div id="chat-container" class="hud-interactive">
+                <div id="chat-output-pool">
+                    <div class="chat-row sys">AI_MODERATOR: Intent processing engine fully initialized. Monitoring for PII, Slurs, and Relationship Solicitation.</div>
+                </div>
+                <input type="text" id="chat-input-node" placeholder="Type message... (Press Enter)">
             </div>
 
-            <div class="action-cluster interactive" id="mobile-actions">
-                <button class="action-btn" id="btn-jump">JUMP</button>
-                <button class="action-btn" id="fire-btn">FIRE</button>
+            <div class="vitals-dashboard">
+                <div style="font-weight: 900; letter-spacing: 1px; color: #fff; font-size: 1.1rem;" id="badge-ui-identity">SURVIVOR</div>
+                
+                <div class="vital-title hp-lbl">Integrity Pool</div>
+                <div class="progress-bar-track"><div class="fill-node-hp" id="bar-display-hp"></div></div>
+                
+                <div class="vital-title sh-lbl">Shield Matrix</div>
+                <div class="progress-bar-track"><div class="fill-node-sh" id="bar-display-sh"></div></div>
+                
+                <div class="vital-title mn-lbl">Mana Reserve (Max 200%)</div>
+                <div class="progress-bar-track"><div class="fill-node-mn" id="bar-display-mn"></div></div>
+                
+                <div class="loadout-indicator" id="badge-ui-weapon">WEAPON: PIECE PISTOL</div>
+                <div style="font-size:0.7rem; color:#a855f7; margin-top:2px;" id="badge-ui-tier">TIER: COMMON</div>
+            </div>
+        </div>
+
+        <div id="game-reticle">
+            <div class="reticle-hair hair-w"></div>
+            <div class="reticle-hair hair-h"></div>
+            <div class="reticle-hair hair-center"></div>
+        </div>
+
+        <div id="trackpad-move-boundary" class="hud-interactive"></div>
+        <div id="trackpad-look-boundary" class="hud-interactive"></div>
+
+        <div class="action-button-matrix hud-interactive">
+            <div class="horizontal-subgroup">
+                <button class="action-circle-node" id="node-trigger-medkit">MEDKIT<br>(1)</button>
+                <button class="action-circle-node" id="node-trigger-swap">SWAP<br>GUN</button>
+            </div>
+            <div class="horizontal-subgroup">
+                <button class="action-circle-node" id="node-trigger-move">MOVE<br>SKILL</button>
+                <button class="action-circle-node" id="node-trigger-jump">JUMP</button>
+                <button class="action-circle-node" id="node-trigger-fire">FIRE</button>
             </div>
         </div>
     </div>
 
-    <div id="canvas-container"></div>
+    <div id="termination-modal" class="termination-screen-overlay hud-interactive">
+        <h1 style="font-size: 4.5rem; color: var(--health-red); text-shadow: 3px 3px 0px #000; font-weight: 900; margin-bottom: 10px; letter-spacing: 2px;">CONNECTION LOST</h1>
+        <p style="color: #cbd5e1; font-size: 1.3rem; margin-bottom: 35px; letter-spacing: 1px;">Your structural framework collapsed on the battlefield.</p>
+        <div style="display: flex; gap: 20px; width: 85%; max-width: 420px;">
+            <button class="btn-deploy" style="background: #dc2626; box-shadow: 0 5px 0 #7f1d1d;" id="btn-action-respawn">Respawn</button>
+            <button class="btn-deploy" style="background: #475569; box-shadow: 0 5px 0 #1e293b;" id="btn-action-leave">Leave Game</button>
+        </div>
+    </div>
+
+    <div id="virtual-joystick-housing">
+        <div id="virtual-joystick-puck"></div>
+    </div>
 
     <script>
         /**
-         * ============================================================================
-         * TEMU FORTNITE ENGINE V2.0 - MASSIVE EXPANSION
-         * ============================================================================
-         * Features: 
-         * - Multi-touch Dynamic Joystick & Camera Gestures
-         * - Procedural Instanced Environment (Grass, Trees)
-         * - Darker Color Palettes
-         * - Advanced AI State Machines
-         * - Complex Tiered Combat
-         * ============================================================================
+         * ==================================================================================
+         * TEMU FORTNITE CORE ARCHITECTURE ENGINE
+         * ARCHITECTURAL DESIGN COMPLETE SYSTEM v4.0
+         * ==================================================================================
          */
 
-        // --- PREVENT BROWSER DEFAULT GESTURES ---
-        document.addEventListener('contextmenu', event => event.preventDefault());
-        document.addEventListener('touchstart', (e) => { 
-            if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
-                e.preventDefault(); 
-            }
-        }, { passive: false });
-
-        // --- GLOBAL CONFIGURATION & CONSTANTS ---
-        const CONFIG = {
-            WORLD_SIZE: 800,
-            GRAVITY: 28.0,
-            RENDER_URL: "https://temufortnite.onrender.com/",
-            MAX_BOTS: 25,
-            SPAWN_RATE: 3.0,
-            GRASS_COUNT: 15000,
-            TREE_COUNT: 400,
-            COLORS: {
-                SKY: 0x111827,         // Darker Night Sky
-                FOG: 0x0f172a,         // Darker Fog
-                GROUND: 0x142e12,      // Darker Green Ground
-                SKIN: 0xc49a6c,        // Slightly darker skin tone
-                ENEMY_SKIN: 0x660000,  // Darker maroon for enemies
-                TRACER: 0xffaa00,
-                DAMAGE: 0xff2222,
-                HEAL: 0x22ff22,
-                WOOD: 0x2b1d14,
-                LEAVES: 0x0d3b1b
-            }
-        };
-
-        // --- TIERED WEAPON SYSTEM (EXPANDED) ---
-        const WEAPON_TIERS = {
-            COMMON: { name: "Basic Blaster", type: "common", damage: 15, cooldown: 0.4, color: 0x94a3b8, moves: 1, spread: 0.02 },
-            RARE: { name: "Assault Rifle", type: "rare", damage: 25, cooldown: 0.15, color: 0x3b82f6, moves: 3, spread: 0.05 },
-            LEGENDARY_ELECTRO: { name: "Storm Surge (Electro)", type: "legendary", damage: 45, cooldown: 0.12, color: 0xeab308, moves: 5, effect: 'shock', spread: 0.08 },
-            LEGENDARY_INFERNO: { name: "Hellfire (Inferno)", type: "legendary", damage: 60, cooldown: 0.6, color: 0xef4444, moves: 8, effect: 'burn', spread: 0.15 },
-            LEGENDARY_DELUGE: { name: "Tsunami (Deluge)", type: "legendary", damage: 35, cooldown: 0.08, color: 0x06b6d4, moves: 6, effect: 'slow', spread: 0.04 },
-            LEGENDARY_GLACIER: { name: "Permafrost (Glacier)", type: "legendary", damage: 90, cooldown: 1.5, color: 0xe0f2fe, moves: 1, effect: 'freeze', spread: 0.01 },
-            LEGENDARY_SPEED: { name: "Velocity (Top Speed)", type: "legendary", damage: 20, cooldown: 0.05, color: 0xa855f7, moves: 4, effect: 'haste', spread: 0.06 }
-        };
-
-        // --- GLOBAL STATE MANAGEMENT ---
-        const State = {
-            active: false,
-            localPlayer: null,
-            cameraDistance: 6.0, // Distance for Orbit/Zoom. 0 = FPS
-            cameraTheta: 0,      // Horizontal orbit angle
-            cameraPhi: Math.PI / 3, // Vertical orbit angle
-            actors: new Map(),
-            sceneryData: [],
-            projectiles: [],
-            particles: [],
-            clock: new THREE.Clock(),
-            spawnTimer: 0,
-            controlsMode: 'mobile', // 'mobile' or 'laptop'
-            roomCode: ""
-        };
-
-        // --- INPUT CONTROLLER (Multi-touch & Laptop Integration) ---
-        class InputController {
+        // --- HEURISTIC PATTERN EVALUATION AI CHAT MODERATOR ---
+        class IntelligentSemanticAIModerator {
             constructor() {
-                this.forward = 0;
-                this.backward = 0;
-                this.left = 0;
-                this.right = 0;
-                this.jump = false;
-                this.fire = false;
-                
-                // Mouse/Laptop specific
-                this.lookX = 0;
-                this.lookY = 0;
-                this.pointerLocked = false;
-
-                // Touch specific
-                this.touches = new Map();
-                this.joyId = null;
-                this.joyOrigin = new THREE.Vector2();
-                this.lookId = null;
-                this.lastLookPos = new THREE.Vector2();
-                
-                // Zoom Gestures
-                this.pinchDist = 0;
-
-                this.bindEvents();
-            }
-
-            bindEvents() {
-                // LAPTOP TOGGLE LOGIC
-                const laptopBtn = document.getElementById('btn-laptop');
-                laptopBtn.addEventListener('click', () => {
-                    if (State.controlsMode === 'mobile') {
-                        State.controlsMode = 'laptop';
-                        laptopBtn.innerText = "📱 MOBILE CONTROLS";
-                        laptopBtn.style.background = "rgba(249, 115, 22, 0.8)"; // Orange for active
-                        document.getElementById('mobile-actions').style.display = 'none';
-                        if(State.active) document.body.requestPointerLock();
-                    } else {
-                        State.controlsMode = 'mobile';
-                        laptopBtn.innerText = "💻 LAPTOP CONTROLS";
-                        laptopBtn.style.background = "rgba(15, 23, 42, 0.8)";
-                        document.getElementById('mobile-actions').style.display = 'flex';
-                        document.exitPointerLock();
-                    }
-                });
-
-                // KEYBOARD (Laptop Mode)
-                const handleKey = (e, isDown) => {
-                    if (State.controlsMode !== 'laptop') return;
-                    switch(e.code) {
-                        case 'KeyW': this.forward = isDown ? 1 : 0; break;
-                        case 'KeyS': this.backward = isDown ? 1 : 0; break;
-                        case 'KeyA': this.left = isDown ? 1 : 0; break;
-                        case 'KeyD': this.right = isDown ? 1 : 0; break;
-                        case 'Space': if(isDown) this.jump = true; break;
-                    }
-                };
-                document.addEventListener('keydown', e => handleKey(e, true));
-                document.addEventListener('keyup', e => handleKey(e, false));
-
-                // MOUSE (Laptop Mode)
-                document.addEventListener('click', (e) => {
-                    if (State.active && State.controlsMode === 'laptop' && e.target.tagName !== 'BUTTON') {
-                        document.body.requestPointerLock();
-                    }
-                });
-                
-                document.addEventListener('pointerlockchange', () => {
-                    this.pointerLocked = (document.pointerLockElement === document.body);
-                });
-
-                document.addEventListener('mousemove', e => {
-                    if (this.pointerLocked) {
-                        // Orbit camera logic for mouse
-                        State.cameraTheta -= e.movementX * 0.005;
-                        State.cameraPhi -= e.movementY * 0.005;
-                        State.cameraPhi = THREE.MathUtils.clamp(State.cameraPhi, 0.1, Math.PI - 0.1);
-                        
-                        // Sync player body rotation if in FPS
-                        if(State.cameraDistance === 0 && State.localPlayer) {
-                            State.localPlayer.mesh.rotation.y = State.cameraTheta;
-                        }
-                    }
-                });
-
-                document.addEventListener('mousedown', e => { if(this.pointerLocked && e.button===0) this.fire = true; });
-                document.addEventListener('mouseup', e => { if(e.button===0) this.fire = false; });
-                
-                // MOUSE WHEEL (Zoom for Laptop)
-                document.addEventListener('wheel', e => {
-                    if (State.controlsMode === 'laptop') {
-                        State.cameraDistance += e.deltaY * 0.01;
-                        State.cameraDistance = THREE.MathUtils.clamp(State.cameraDistance, 0, 15);
-                    }
-                });
-
-                // ==========================================
-                // MULTI-TOUCH MOBILE CONTROLS
-                // ==========================================
-                const joyUI = document.getElementById('dynamic-joystick');
-                const knobUI = document.getElementById('dynamic-knob');
-                const halfWidth = window.innerWidth / 2;
-
-                document.addEventListener('touchstart', e => {
-                    if (State.controlsMode !== 'mobile' || !State.active) return;
-                    
-                    for (let i=0; i<e.changedTouches.length; i++) {
-                        const t = e.changedTouches[i];
-                        this.touches.set(t.identifier, t);
-
-                        // Check if touch is on Action Buttons
-                        if(t.target.id === 'btn-jump') { this.jump = true; continue; }
-                        if(t.target.id === 'fire-btn') { this.fire = true; continue; }
-
-                        // Left Screen = Dynamic Joystick
-                        if (t.clientX < halfWidth && this.joyId === null) {
-                            this.joyId = t.identifier;
-                            this.joyOrigin.set(t.clientX, t.clientY);
-                            
-                            // Show and position joystick UI
-                            joyUI.style.display = 'block';
-                            joyUI.style.left = `${t.clientX}px`;
-                            joyUI.style.top = `${t.clientY}px`;
-                            knobUI.style.transform = `translate(0px, 0px)`;
-                        }
-                        // Right Screen = Camera Drag / Zoom
-                        else if (t.clientX >= halfWidth && this.lookId === null) {
-                            this.lookId = t.identifier;
-                            this.lastLookPos.set(t.clientX, t.clientY);
-                        }
-                    }
-                    
-                    // Handle Pinch Zoom initialization
-                    const activeTouches = Array.from(this.touches.values());
-                    if (activeTouches.length >= 2) {
-                        const t1 = activeTouches[0];
-                        const t2 = activeTouches[1];
-                        const dx = t1.clientX - t2.clientX;
-                        const dy = t1.clientY - t2.clientY;
-                        this.pinchDist = Math.sqrt(dx*dx + dy*dy);
-                    }
-                }, {passive: false});
-
-                document.addEventListener('touchmove', e => {
-                    if (State.controlsMode !== 'mobile' || !State.active) return;
-                    
-                    for(let i=0; i<e.changedTouches.length; i++) {
-                        const t = e.changedTouches[i];
-                        this.touches.set(t.identifier, t);
-
-                        // Update Joystick
-                        if (t.identifier === this.joyId) {
-                            let dx = t.clientX - this.joyOrigin.x;
-                            let dy = t.clientY - this.joyOrigin.y;
-                            const dist = Math.sqrt(dx*dx + dy*dy);
-                            const maxDist = 50; // Radius of outer ring
-                            
-                            if (dist > maxDist) {
-                                dx = (dx/dist) * maxDist;
-                                dy = (dy/dist) * maxDist;
-                            }
-                            
-                            knobUI.style.transform = `translate(${dx}px, ${dy}px)`;
-                            
-                            // Normalize to 0-1 for engine
-                            this.left = dx < -5 ? Math.abs(dx)/maxDist : 0;
-                            this.right = dx > 5 ? dx/maxDist : 0;
-                            this.forward = dy < -5 ? Math.abs(dy)/maxDist : 0;
-                            this.backward = dy > 5 ? dy/maxDist : 0;
-                        }
-                        
-                        // Update Look Camera (Roblox Style Drag)
-                        if (t.identifier === this.lookId) {
-                            // Check if pinching instead of dragging
-                            if (this.touches.size >= 2) continue; 
-
-                            const dx = t.clientX - this.lastLookPos.x;
-                            const dy = t.clientY - this.lastLookPos.y;
-                            
-                            State.cameraTheta -= dx * 0.008;
-                            State.cameraPhi -= dy * 0.008;
-                            State.cameraPhi = THREE.MathUtils.clamp(State.cameraPhi, 0.1, Math.PI - 0.1);
-                            
-                            this.lastLookPos.set(t.clientX, t.clientY);
-                        }
-                    }
-
-                    // Handle active pinching for zoom
-                    if (this.touches.size >= 2) {
-                        const activeTouches = Array.from(this.touches.values());
-                        const t1 = activeTouches[0];
-                        const t2 = activeTouches[1];
-                        const dx = t1.clientX - t2.clientX;
-                        const dy = t1.clientY - t2.clientY;
-                        const newDist = Math.sqrt(dx*dx + dy*dy);
-                        
-                        const diff = this.pinchDist - newDist;
-                        State.cameraDistance += diff * 0.05;
-                        State.cameraDistance = THREE.MathUtils.clamp(State.cameraDistance, 0, 15);
-                        
-                        this.pinchDist = newDist;
-                    }
-                }, {passive: false});
-
-                document.addEventListener('touchend', e => {
-                    if (State.controlsMode !== 'mobile') return;
-                    
-                    for(let i=0; i<e.changedTouches.length; i++) {
-                        const t = e.changedTouches[i];
-                        this.touches.delete(t.identifier);
-
-                        if(t.target.id === 'fire-btn') this.fire = false;
-
-                        if (t.identifier === this.joyId) {
-                            this.joyId = null;
-                            joyUI.style.display = 'none';
-                            this.forward = 0; this.backward = 0; this.left = 0; this.right = 0;
-                        }
-                        
-                        if (t.identifier === this.lookId) {
-                            this.lookId = null;
-                        }
-                    }
-                });
-            }
-        }
-        
-        // Initialize global input instance
-        const Input = new InputController();
-
-        // --- NETWORK SIMULATOR (Using Render Link) ---
-        class NetworkService {
-            constructor(url) {
-                this.endpoint = url;
-                this.connected = false;
-                this.mockPeers = [];
-            }
-            
-            connect(room, username) {
-                console.log(`[NETWORK] Negotiating with ${this.endpoint}`);
-                setTimeout(() => {
-                    this.connected = true;
-                    this.seedMockPeers(room);
-                }, 600);
-            }
-            
-            seedMockPeers(room) {
-                if(!room) return; 
-                const names = ["TemuWarrior", "BuildPro99", "NoScopeGod", "LootGoblin"];
-                const count = Math.min(3, Math.max(1, room.length % 4));
-                for(let i=0; i<count; i++) {
-                    const peer = new PlayerActor(`Peer_${i}`, names[i]);
-                    peer.equipWeapon(WEAPON_TIERS.RARE);
-                    peer.mesh.position.set((Math.random()-0.5)*40, 0, (Math.random()-0.5)*40);
-                    State.actors.set(peer.id, peer);
-                    this.mockPeers.push(peer);
-                }
-            }
-            
-            sync(delta) {
-                if(!this.connected) return;
-                this.mockPeers.forEach(peer => {
-                    if(peer.isDead) return;
-                    if(Math.random() < 0.015) {
-                        peer.targetDir = new THREE.Vector3((Math.random()-0.5)*2, 0, (Math.random()-0.5)*2).normalize();
-                        peer.targetRot = Math.atan2(peer.targetDir.x, peer.targetDir.z);
-                    }
-                    if(peer.targetDir) {
-                        peer.velocity.x = peer.targetDir.x * peer.speed * 0.8;
-                        peer.velocity.z = peer.targetDir.z * peer.speed * 0.8;
-                        peer.mesh.rotation.y = THREE.MathUtils.lerp(peer.mesh.rotation.y, peer.targetRot, 0.1);
-                    }
-                    peer.update(delta);
-                });
-            }
-        }
-        const Network = new NetworkService(CONFIG.RENDER_URL);
-
-        // --- ENGINE CORE: RENDERING SETUP ---
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(CONFIG.COLORS.SKY);
-        scene.fog = new THREE.FogExp2(CONFIG.COLORS.FOG, 0.0035); // Denser dark fog
-
-        const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1500);
-        
-        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Cap pixel ratio for performance
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        document.getElementById('canvas-container').appendChild(renderer.domElement);
-
-        // Darker Lighting System
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.25); // Very dim ambient
-        scene.add(ambientLight);
-
-        // Moonlight / Dark Directional Light
-        const dirLight = new THREE.DirectionalLight(0xaabbff, 0.8);
-        dirLight.position.set(300, 400, 200);
-        dirLight.castShadow = true;
-        dirLight.shadow.mapSize.width = 2048;
-        dirLight.shadow.mapSize.height = 2048;
-        dirLight.shadow.camera.near = 10;
-        dirLight.shadow.camera.far = 1000;
-        const d = 350;
-        dirLight.shadow.camera.left = -d; dirLight.shadow.camera.right = d;
-        dirLight.shadow.camera.top = d; dirLight.shadow.camera.bottom = -d;
-        dirLight.shadow.bias = -0.001;
-        scene.add(dirLight);
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        // --- PROCEDURAL WORLD GENERATION (EXPANDED FORESTRY & GRASS) ---
-        class WorldBuilder {
-            constructor() {
-                this.buildTerrain();
-                this.buildWalls();
-                this.scatterForest();
-                this.generateTallGrass();
-            }
-
-            buildTerrain() {
-                const geo = new THREE.PlaneGeometry(CONFIG.WORLD_SIZE, CONFIG.WORLD_SIZE, 128, 128);
-                const pos = geo.attributes.position;
-                
-                // Advanced procedural noise for terrain heightmap
-                for (let i = 0; i < pos.count; i++) {
-                    let x = pos.getX(i);
-                    let y = pos.getY(i);
-                    let dist = Math.sqrt(x*x + y*y);
-                    
-                    // Create a flat center arena, rolling hills outwards
-                    if (dist > 60) {
-                        let elevation = Math.sin(x * 0.02) * Math.cos(y * 0.02) * 6.0;
-                        elevation += Math.sin(x * 0.008 + y * 0.015) * 12.0;
-                        
-                        // Add some sharp rocks/peaks
-                        if(Math.abs(Math.sin(x*0.1)*Math.cos(y*0.1)) > 0.8) {
-                            elevation += 5.0;
-                        }
-                        pos.setZ(i, elevation);
-                    }
-                }
-                
-                geo.computeVertexNormals();
-                const mat = new THREE.MeshStandardMaterial({ 
-                    color: CONFIG.COLORS.GROUND, 
-                    roughness: 0.9, 
-                    metalness: 0.05,
-                    flatShading: true 
-                });
-                
-                const ground = new THREE.Mesh(geo, mat);
-                ground.rotation.x = -Math.PI / 2;
-                ground.receiveShadow = true;
-                scene.add(ground);
-            }
-
-            scatterForest() {
-                const treeMatWood = new THREE.MeshStandardMaterial({ color: CONFIG.COLORS.WOOD, roughness: 1.0 });
-                const treeMatLeaves = new THREE.MeshStandardMaterial({ color: CONFIG.COLORS.LEAVES, roughness: 0.9, flatShading: true });
-                
-                const pineGeo = new THREE.ConeGeometry(4, 12, 5);
-                const trunkGeo = new THREE.CylinderGeometry(0.8, 1.2, 4, 6);
-                const oakGeo = new THREE.DodecahedronGeometry(5, 1);
-
-                for (let i = 0; i < CONFIG.TREE_COUNT; i++) {
-                    let rx = (Math.random() - 0.5) * (CONFIG.WORLD_SIZE - 40);
-                    let rz = (Math.random() - 0.5) * (CONFIG.WORLD_SIZE - 40);
-                    
-                    if (Math.sqrt(rx*rx + rz*rz) < 50) continue; // Keep drop zone clear
-
-                    const treeGrp = new THREE.Group();
-                    treeGrp.position.set(rx, 0, rz);
-
-                    // Add Trunk
-                    const trunk = new THREE.Mesh(trunkGeo, treeMatWood);
-                    trunk.position.y = 2;
-                    trunk.castShadow = true;
-                    trunk.receiveShadow = true;
-                    treeGrp.add(trunk);
-
-                    // Randomize Tree Type
-                    if (Math.random() > 0.5) {
-                        // Pine Tree
-                        const leaves = new THREE.Mesh(pineGeo, treeMatLeaves);
-                        leaves.position.y = 8;
-                        leaves.castShadow = true;
-                        treeGrp.add(leaves);
-                    } else {
-                        // Oak Tree
-                        const leaves1 = new THREE.Mesh(oakGeo, treeMatLeaves);
-                        leaves1.position.y = 7;
-                        leaves1.castShadow = true;
-                        treeGrp.add(leaves1);
-                        
-                        const leaves2 = new THREE.Mesh(oakGeo, treeMatLeaves);
-                        leaves2.position.set(2, 6, 2);
-                        leaves2.scale.set(0.7,0.7,0.7);
-                        leaves2.castShadow = true;
-                        treeGrp.add(leaves2);
-                    }
-                    
-                    // Add random rotation and scale
-                    treeGrp.rotation.y = Math.random() * Math.PI;
-                    const s = 0.8 + Math.random() * 0.6;
-                    treeGrp.scale.set(s,s,s);
-                    
-                    scene.add(treeGrp);
-                    
-                    // Register collision data
-                    State.sceneryData.push({ x: rx, z: rz, radius: 1.5 * s });
-                }
-            }
-
-            generateTallGrass() {
-                // High performance InstancedMesh for thousands of grass blades
-                const grassGeo = new THREE.PlaneGeometry(0.6, 2.5);
-                grassGeo.translate(0, 1.25, 0); // Move pivot to bottom
-                
-                const grassMat = new THREE.MeshStandardMaterial({
-                    color: 0x1a4519,
-                    side: THREE.DoubleSide,
-                    alphaTest: 0.5,
-                    roughness: 1.0
-                });
-
-                const instancedGrass = new THREE.InstancedMesh(grassGeo, grassMat, CONFIG.GRASS_COUNT);
-                instancedGrass.receiveShadow = true;
-
-                const dummy = new THREE.Object3D();
-                let placed = 0;
-
-                while (placed < CONFIG.GRASS_COUNT) {
-                    let rx = (Math.random() - 0.5) * CONFIG.WORLD_SIZE;
-                    let rz = (Math.random() - 0.5) * CONFIG.WORLD_SIZE;
-                    
-                    // cluster grass somewhat near origin but spread out
-                    dummy.position.set(rx, 0, rz);
-                    dummy.rotation.y = Math.random() * Math.PI;
-                    
-                    // Randomize height slightly
-                    const scaleY = 0.5 + Math.random() * 1.5;
-                    dummy.scale.set(1, scaleY, 1);
-                    
-                    dummy.updateMatrix();
-                    instancedGrass.setMatrixAt(placed, dummy.matrix);
-                    placed++;
-                }
-
-                scene.add(instancedGrass);
-            }
-
-            buildWalls() {
-                const border = CONFIG.WORLD_SIZE / 2;
-                // Forcefield effect for world bounds
-                const mat = new THREE.MeshStandardMaterial({ 
-                    color: 0x0ea5e9, 
-                    transparent: true, 
-                    opacity: 0.15, 
-                    side: THREE.DoubleSide,
-                    emissive: 0x0ea5e9,
-                    emissiveIntensity: 0.5
-                });
-                const geo = new THREE.PlaneGeometry(CONFIG.WORLD_SIZE, 200);
-                
-                const data = [
-                    { p: [0, 100, border], r: [0,0,0] },
-                    { p: [0, 100, -border], r: [0,0,0] },
-                    { p: [border, 100, 0], r: [0, Math.PI/2, 0] },
-                    { p: [-border, 100, 0], r: [0, Math.PI/2, 0] }
+                // Tracking parameters identifying algorithmic variations of personal identifiers
+                this.piiSignatures = [
+                    /\b\d{3,4}[-.\s]?\d{3,4}[-.\s]?\d.{3,4}\b/, // Structural variations of numeric phone layouts
+                    /\b\d{1,5}\s[A-Za-z0-9\s.]{3,}\s(St|Street|Ave|Avenue|Rd|Road|Blvd|Drive|Way|Lane)\b/i, // Spatial location identifiers
+                    /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/, // Email parameters
+                    /\b(snap|snapchat|insta|instagram|discord|dc|roblox|tiktok|add\s?me|my\s?user|username\s?is|phone\s?num|number\s?is|add\s?my)\b/i // External routing mechanics
                 ];
 
-                data.forEach(d => {
-                    const wall = new THREE.Mesh(geo, mat);
-                    wall.position.set(...d.p);
-                    wall.rotation.set(...d.r);
-                    scene.add(wall);
-                });
+                // Relationship Manipulation and E-Dating Context Patterns
+                this.relationshipProfiles = [
+                    /\b(gf|bf|boyfriend|girlfriend|wifey|hubby|date|dating|single|taken|marry\s?me|u\s?single|wanna\s?date|looking\s?for\s?gf|looking\s?for\s?bf|be\s?my\s?gf|be\s?my\s?bf)\b/i,
+                    /\b(boy\s?friend|girl\s?friend|e-date|edate|online\s?relationship|kiss\s?me|hug\s?me|babe|baby|sweetheart|cutie|freaky|sexy|hot|smash|hawt|roleplay|rp)\b/i
+                ];
+
+                // Severe Prohibited Expressions Framework
+                this.hostileSignatures = [
+                    /\b(slur[0-9]|cuss[0-9]|toxicphrase|explictword)\b/i
+                ];
+            }
+
+            /**
+             * Processes natural text payload to isolate semantic intentions
+             * @param {string} payload 
+             * @returns {Object} { clean: boolean, errorDescription: string|null }
+             */
+            verifyPayloadSafety(payload) {
+                const standardizedPayload = payload.trim().toLowerCase();
+
+                // 1. Scan Personal Data Leak Footprints
+                for (let pattern of this.piiSignatures) {
+                    if (pattern.test(standardizedPayload)) {
+                        return { clean: false, errorDescription: "Security Exception: Data transmission blocked. Distribution of sensitive personal routing paths or PII is prohibited." };
+                    }
+                }
+
+                // 2. Process Interaction Intercepts targeting E-Dating Patterns
+                let riskScore = 0;
+                for (let pattern of this.relationshipProfiles) {
+                    if (pattern.test(standardizedPayload)) {
+                        riskScore += 2;
+                    }
+                }
+
+                // Correlate interrogative phrasing targeting extraction loops
+                if (/\b(are\s?you|u\s?have|wanna|looking\s?for|do\s?you|can\s?i|give\s?me)\b/i.test(standardizedPayload) && riskScore >= 2) {
+                    return { clean: false, errorDescription: "Safety Exception: Intent engine flag raised. Phrasing matches conversational parameters associated with unauthorized relationship solicitation or e-dating." };
+                }
+
+                if (riskScore >= 4) {
+                    return { clean: false, errorDescription: "Safety Exception: Text rejected. Language patterns conflict with safety policies." };
+                }
+
+                // 3. Scan Absolute Hostility Matrix Arrays
+                for (let pattern of this.hostileSignatures) {
+                    if (pattern.test(standardizedPayload)) {
+                        return { clean: false, errorDescription: "Safety Exception: Packet dropped due to explicit or hostile content violations." };
+                    }
+                }
+
+                return { clean: true, errorDescription: null };
             }
         }
 
-        // --- ENTITY SYSTEM: ACTORS & ANIMATIONS ---
-        class Actor {
-            constructor(id, name, colorCode) {
-                this.id = id;
-                this.name = name;
-                this.health = 100;
-                this.shield = 50;
-                this.isDead = false;
-                this.kills = 0;
+        // --- RUNTIME CONFIGURATION PARAMETERS ---
+        const EngineConfig = {
+            World: {
+                Size: 500,
+                GroundColor: 0x0f2a14, // Rich stylized dark green shade
+                SkyColor: 0x091c0e,
+                DensityGrass: 600
+            },
+            Vitals: {
+                MaxHP: 100,
+                MaxShield: 100,
+                MaxMana: 200, // Maximum analytical specification 200%
+                SpeedBase: 15,
+                RegenRate: 4,
+                RegenTickPeriod: 1000,
+                RegenCooldownTime: 5000
+            },
+            Weapons: {
+                PISTOL: { name: "Piece Pistol", velocity: 40, damage: 10, interval: 500, diameter: 0.25, hue: 0xffffff },
+                RIFLE: { name: "Ranger Rifle", velocity: 90, damage: 25, interval: 200, diameter: 0.15, hue: 0xfacc15 }
+            }
+        };
+
+        // --- CENTRAL SYSTEMS RUNTIME ARCHITECTURE ---
+        class CentralSimulationEngine {
+            constructor() {
+                this.scene = null;
+                this.camera = null;
+                this.renderer = null;
+                this.socket = null;
                 
-                this.position = new THREE.Vector3();
-                this.velocity = new THREE.Vector3();
-                this.speed = 14.0; 
-                this.isGrounded = true;
+                // System Registry Collections
+                this.projectilesList = [];
+                this.opponentsList = [];
+                this.networkPeersMap = new Map(); // Real-time storage for remote players
                 
-                this.weapon = WEAPON_TIERS.COMMON;
-                this.lastFireTime = 0;
-                this.animClock = 0;
+                // Component Instantiations
+                this.moderator = new IntelligentSemanticAIModerator();
+                this.player = new LocalPlayerController(this);
+                this.inputs = new DecoupledDeviceInputSystem(this);
                 
-                this.buildRig(colorCode);
+                this.activeState = false;
+                this.previousFrameTime = 0;
+                this.selectedCombatTier = "common";
             }
 
-            buildRig(colorHex) {
-                this.mesh = new THREE.Group();
-                const matBody = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.8 });
-                const matSkin = new THREE.MeshStandardMaterial({ color: CONFIG.COLORS.SKIN, roughness: 0.7 });
-                const matDark = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.9 });
+            initializeSimulationSpace() {
+                const targetViewport = document.getElementById('canvas-viewport');
+                
+                this.scene = new THREE.Scene();
+                this.scene.background = new THREE.Color(EngineConfig.World.SkyColor);
+                this.scene.fog = new THREE.FogExp2(EngineConfig.World.SkyColor, 0.018);
 
-                this.torso = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2.2, 0.8), matBody);
-                this.torso.position.y = 2.4; 
-                this.torso.castShadow = true;
-                this.mesh.add(this.torso);
+                this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+                
+                this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                this.renderer.shadowMap.enabled = true;
+                targetViewport.appendChild(this.renderer.domElement);
 
-                this.head = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.1, 1.1), matSkin);
-                this.head.position.y = 1.7;
-                this.head.castShadow = true;
-                this.torso.add(this.head);
+                // Setup Environmental Illuminations
+                const ambientSystemLight = new THREE.AmbientLight(0x1e3d24, 1.4);
+                this.scene.add(ambientSystemLight);
 
-                const visor = new THREE.Mesh(new THREE.BoxGeometry(1.12, 0.25, 0.3), matDark);
-                visor.position.set(0, 0.1, 0.45);
-                this.head.add(visor);
+                const directionalSunLight = new THREE.DirectionalLight(0x22c55e, 0.7);
+                directionalSunLight.position.set(80, 120, 40);
+                this.scene.add(directionalSunLight);
 
-                const createLimb = (w, h, d, mat, px, py, pivotY) => {
-                    const limb = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
-                    limb.position.set(px, py, 0);
-                    limb.geometry.translate(0, pivotY, 0); 
-                    limb.castShadow = true;
-                    this.torso.add(limb);
-                    return limb;
-                };
+                this.generateTerrainSurface();
+                this.spawnEnvironmentOpponents();
+                this.establishNetworkPipeline();
 
-                this.armL = createLimb(0.5, 1.7, 0.5, matBody, -1.1, 0.8, -0.6);
-                this.armR = createLimb(0.5, 1.7, 0.5, matBody, 1.1, 0.8, -0.6);
-                this.legL = createLimb(0.65, 1.7, 0.65, matDark, -0.5, -1.1, -0.85);
-                this.legR = createLimb(0.65, 1.7, 0.65, matDark, 0.5, -1.1, -0.85);
-
-                this.weaponGroup = new THREE.Group();
-                this.buildWeaponMesh();
-                this.armR.add(this.weaponGroup);
-
-                this.mesh.traverse(child => { if(child.isMesh) child.userData = { parentActor: this }; });
-                scene.add(this.mesh);
+                window.addEventListener('resize', () => this.handleResizeEvent(), false);
             }
 
-            buildWeaponMesh() {
-                this.weaponGroup.clear();
-                const matBase = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.5 });
-                const matAccent = new THREE.MeshStandardMaterial({ 
-                    color: this.weapon.color, 
-                    emissive: this.weapon.color, 
-                    emissiveIntensity: 0.8 
+            generateTerrainSurface() {
+                const landscapeGeometry = new THREE.PlaneGeometry(EngineConfig.World.Size, EngineConfig.World.Size, 24, 24);
+                
+                // Apply spatial transformation waves to build elevation variance
+                const positionPositions = landscapeGeometry.attributes.position;
+                for (let i = 0; i < positionPositions.count; i++) {
+                    const currentX = positionPositions.getX(i);
+                    const currentY = positionPositions.getY(i);
+                    const calculatedZ = Math.sin(currentX * 0.03) * Math.cos(currentY * 0.03) * 3.0;
+                    positionPositions.setZ(i, calculatedZ);
+                }
+                landscapeGeometry.computeVertexNormals();
+
+                const landscapeMaterial = new THREE.MeshStandardMaterial({
+                    color: EngineConfig.World.GroundColor,
+                    roughness: 0.9,
+                    metalness: 0.02
                 });
-                
-                const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 2.0, 8), matBase);
-                barrel.rotation.x = Math.PI / 2;
-                barrel.position.set(0, -1.1, 1.0);
-                
-                const body = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.6, 1.2), matBase);
-                body.position.set(0, -1.1, 0);
-                
-                const scope = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.25, 0.5), matAccent);
-                scope.position.set(0, -0.75, 0.2);
 
-                this.weaponGroup.add(barrel, body, scope);
-                this.muzzlePoint = barrel; 
+                this.terrainMesh = new THREE.Mesh(landscapeGeometry, landscapeMaterial);
+                this.terrainMesh.rotation.x = -Math.PI / 2;
+                this.terrainMesh.receiveShadow = true;
+                this.scene.add(this.terrainMesh);
+
+                this.compileAccurateSurfaceGrass();
             }
 
-            equipWeapon(weaponObj) {
-                this.weapon = weaponObj;
-                this.buildWeaponMesh();
-                if(this === State.localPlayer) updateHUD();
+            /**
+             * Resolves precision height intersections directly from the landscape surface profile
+             * Completely resolves the floating terrain assets bug.
+             */
+            resolveHeightAtCoordinate(posX, posZ) {
+                if (!this.terrainMesh) return 0;
+                const downRaycast = new THREE.Raycaster(
+                    new THREE.Vector3(posX, 120, posZ),
+                    new THREE.Vector3(0, -1, 0)
+                );
+                const intersectionPoints = downRaycast.intersectObject(this.terrainMesh);
+                if (intersectionPoints.length > 0) {
+                    return intersectionPoints[0].point.y;
+                }
+                return 0;
             }
 
-            applyDamage(amount, instigator) {
-                if (this.isDead) return;
+            compileAccurateSurfaceGrass() {
+                const modelGeometry = new THREE.ConeGeometry(0.12, 1.6, 4);
+                const modelMaterial = new THREE.MeshLambertMaterial({ color: 0x14532d });
+
+                const instanceCluster = new THREE.InstancedMesh(modelGeometry, modelMaterial, EngineConfig.World.DensityGrass);
+                const configurationMatrix = new THREE.Matrix4();
+
+                for (let i = 0; i < EngineConfig.World.DensityGrass; i++) {
+                    const coordinateX = (Math.random() - 0.5) * (EngineConfig.World.Size * 0.85);
+                    const coordinateZ = (Math.random() - 0.5) * (EngineConfig.World.Size * 0.85);
+                    
+                    // Force vertical pinning mapping straight to the ground profile height
+                    const dynamicHeightY = this.resolveHeightAtCoordinate(coordinateX, coordinateZ);
+
+                    const spatialPosition = new THREE.Vector3(coordinateX, dynamicHeightY + 0.8, coordinateZ);
+                    const spatialRotation = new THREE.Euler(
+                        (Math.random() - 0.5) * 0.15,
+                        Math.random() * Math.PI,
+                        (Math.random() - 0.5) * 0.15
+                    );
+                    const spatialScale = new THREE.Vector3(1, 0.5 + Math.random() * 0.8, 1);
+
+                    const spatialQuaternion = new THREE.Quaternion().setFromEuler(spatialRotation);
+                    configurationMatrix.compose(spatialPosition, spatialQuaternion, spatialScale);
+                    instanceCluster.setMatrixAt(i, configurationMatrix);
+                }
+
+                instanceCluster.instanceMatrix.needsUpdate = true;
+                this.scene.add(instanceCluster);
+            }
+
+            spawnEnvironmentOpponents() {
+                // Instantiates distinct individual computer bots (0 friendly team alliances)
+                const pointCoordinates = [
+                    new THREE.Vector3(40, 0, -50),
+                    new THREE.Vector3(-60, 0, -80),
+                    new THREE.Vector3(85, 0, 60),
+                    new THREE.Vector3(-35, 0, 45)
+                ];
+
+                pointCoordinates.forEach((coord, index) => {
+                    coord.y = this.resolveHeightAtCoordinate(coord.x, coord.z);
+                    const instanceBot = new ManagedAIEnemy(`Target_Drone_${index + 1}`, coord, this);
+                    this.opponentsList.push(instanceBot);
+                });
+            }
+
+            establishNetworkPipeline() {
+                // Connection Initialization Point leveraging your official Socket.io backend
+                try {
+                    this.socket = io("https://temu-fortnight.onrender.com/", {
+                        transports: ['websocket'],
+                        upgrade: false,
+                        autoConnect: false
+                    });
+
+                    // Define Network Listener Bindings
+                    this.socket.on("connect", () => {
+                        this.pushSystemChatLog("SERVER: Socket tunnel successfully established with deployment center.");
+                    });
+
+                    this.socket.on("peer_state_modification", (data) => {
+                        this.synchronizeRemoteNetworkPeers(data);
+                    });
+
+                    this.socket.on("peer_disconnect_broadcast", (peerId) => {
+                        this.purgeRemotePeerInstance(peerId);
+                    });
+
+                    this.socket.on("replicate_projectile_burst", (packet) => {
+                        this.spawnNetworkReplicatedBullet(packet);
+                    });
+                } catch(err) {
+                    console.error("Networking engine fault: Running deployment under offline context simulation fallback mode.", err);
+                }
+            }
+
+            executeDeploymentFlow() {
+                const targetTag = document.getElementById('node-player-identity').value;
+                document.getElementById('badge-ui-identity').innerText = targetTag.trim().toUpperCase();
+                document.getElementById('badge-ui-tier').innerText = `TIER: ${this.selectedCombatTier.toUpperCase()}`;
                 
+                document.getElementById('deployment-lobby').style.display = 'none';
+                this.activeState = true;
+                
+                this.player.reinitializeStateData();
+                this.inputs.bindPointerLockContext();
+
+                if (this.socket) {
+                    this.socket.connect();
+                    this.socket.emit("player_join_handshake", {
+                        callsign: targetTag,
+                        tier: this.selectedCombatTier
+                    });
+                }
+                
+                this.previousFrameTime = performance.now();
+                requestAnimationFrame((time) => this.simulationExecutionLoop(time));
+            }
+
+            simulationExecutionLoop(timestampHighRes) {
+                if (!this.activeState) return;
+                requestAnimationFrame((time) => this.simulationExecutionLoop(time));
+
+                let executionSliceSeconds = (timestampHighRes - this.previousFrameTime) / 1000;
+                if (executionSliceSeconds > 0.1) executionSliceSeconds = 0.1; // Clip massive rendering latency hiccups
+                this.previousFrameTime = timestampHighRes;
+
+                // 1. Process Core Kinematics Updates
+                this.player.evaluateFrameTransformation(executionSliceSeconds);
+                this.inputs.applyCameraDampingInterpolation();
+
+                // 2. Drive Projectile Transformation Sequences
+                for (let i = this.projectilesList.length - 1; i >= 0; i--) {
+                    const trackingBullet = this.projectilesList[i];
+                    trackingBullet.advanceProjectileFlightTime(executionSliceSeconds);
+                    if (trackingBullet.expiredStateFlag) {
+                        this.projectilesList.splice(i, 1);
+                    }
+                }
+
+                // 3. Drive AI Enemy Matrix Execution States
+                this.opponentsList.forEach(bot => bot.processAIFrameExecution(executionSliceSeconds));
+
+                // 4. Update Network Peer Interpolation Projections
+                this.networkPeersMap.forEach(peerProxy => peerProxy.renderFrameInterpolation(executionSliceSeconds));
+
+                // 5. Pipe Current State Package Outward Across Network Tunnel
+                this.broadcastLocalTransformPacket();
+
+                // 6. Draw Viewport Frames
+                this.renderer.render(this.scene, this.camera);
+            }
+
+            broadcastLocalTransformPacket() {
+                if (!this.socket || !this.socket.connected) return;
+                this.socket.emit("client_transform_broadcast", {
+                    coords: { x: this.player.coords.x, y: this.player.coords.y, z: this.player.coords.z },
+                    yaw: this.inputs.angleYaw,
+                    vitals: { hp: this.player.health, sh: this.player.shield, mn: this.player.mana }
+                });
+            }
+
+            synchronizeRemoteNetworkPeers(serverDataPacket) {
+                if (!this.activeState) return;
+                
+                // Iterate through packet collection keys to sync connected peers
+                Object.keys(serverDataPacket).forEach((peerId) => {
+                    if (peerId === this.socket.id) return; // Skip matching local instance data structures
+
+                    const snapshot = serverDataPacket[peerId];
+                    if (!this.networkPeersMap.has(peerId)) {
+                        const newProxy = new RemotePeerNetworkProxy(peerId, snapshot.callsign, this);
+                        this.networkPeersMap.set(peerId, newProxy);
+                        this.pushSystemChatLog(`SERVER: Active player network instance detected: ${snapshot.callsign}`);
+                    }
+
+                    const activeProxy = this.networkPeersMap.get(peerId);
+                    activeProxy.bufferTargetNetworkPacket(snapshot);
+                });
+            }
+
+            purgeRemotePeerInstance(peerId) {
+                if (this.networkPeersMap.has(peerId)) {
+                    const activeProxy = this.networkPeersMap.get(peerId);
+                    activeProxy.destroyVisualMeshObjects();
+                    this.networkPeersMap.delete(peerId);
+                    this.pushSystemChatLog("SERVER: Remote operational client connection severed.");
+                }
+            }
+
+            spawnNetworkReplicatedBullet(bulletPacket) {
+                if (!this.activeState) return;
+                // Avoid capturing matching local instances echoed by the network architecture
+                if (bulletPacket.ownerId === this.socket.id) return;
+
+                const startOrigin = new THREE.Vector3(bulletPacket.origin.x, bulletPacket.origin.y, bulletPacket.origin.z);
+                const trajectoryDir = new THREE.Vector3(bulletPacket.direction.x, bulletPacket.direction.y, bulletPacket.direction.z);
+                
+                const bulletObj = new PhysicalDodgeableProjectile(
+                    startOrigin, trajectoryDir, bulletPacket.weaponProfile, false, this
+                );
+                this.projectilesList.push(bulletObj);
+            }
+
+            executeChatSubmissionFlow() {
+                const nodeInput = document.getElementById('chat-input-node');
+                const rawMessageString = nodeInput.value;
+                if (!rawMessageString.trim()) return;
+
+                const poolContainer = document.getElementById('chat-output-pool');
+                
+                // Run text input payloads through the semantic validation engine
+                const safetyReport = this.moderator.verifyPayloadSafety(rawMessageString);
+
+                if (safetyReport.clean) {
+                    const tag = this.player.callsign;
+                    
+                    // Output locally
+                    poolContainer.innerHTML += `<div class="chat-row"><strong>${tag}:</strong> ${rawMessageString.replace(/</g, "&lt;")}</div>`;
+                    
+                    // Transmit outward over data streams
+                    if (this.socket && this.socket.connected) {
+                        this.socket.emit("chat_packet_transmit", rawMessageString);
+                    }
+                } else {
+                    poolContainer.innerHTML += `<div class="chat-row err">⚠️ ${safetyReport.errorDescription}</div>`;
+                }
+
+                nodeInput.value = '';
+                poolContainer.scrollTop = poolContainer.scrollHeight;
+            }
+
+            pushSystemChatLog(logString) {
+                const poolContainer = document.getElementById('chat-output-pool');
+                poolContainer.innerHTML += `<div class="chat-row sys">${logString}</div>`;
+                poolContainer.scrollTop = poolContainer.scrollHeight;
+            }
+
+            handleResizeEvent() {
+                this.camera.aspect = window.innerWidth / window.innerHeight;
+                this.camera.updateProjectionMatrix();
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        }
+
+        // --- CAMERA INTERPOLATION & DECOUPLED DEVICE INPUT CONTROLLER ---
+        class DecoupledDeviceInputSystem {
+            constructor(coreContext) {
+                this.context = coreContext;
+                
+                // Key state map tracking
+                this.keysStateMap = { KeyW: false, KeyA: false, KeyS: false, KeyD: false, Space: false };
+                
+                // Camera Angle Transformations
+                this.angleYaw = 0;
+                this.anglePitch = 0;
+                
+                // Interpolation Destination Buffers (Prevents jitter artifacts)
+                this.targetAngleYaw = 0;
+                this.targetAnglePitch = 0;
+                this.smoothingDampFactor = 0.16; // Pure linear exponential tracking dampener
+
+                // Decoupled Mobile Gesture Pointer Configurations
+                this.activePointerIdMove = null;
+                this.originPointMove = new THREE.Vector2();
+                this.translationScalarVector = new THREE.Vector2();
+
+                this.activePointerIdLook = null;
+                this.lastRecordedPointLook = new THREE.Vector2();
+
+                this.mapDeviceHardwareEvents();
+            }
+
+            bindPointerLockContext() {
+                if (window.innerWidth > 1024) {
+                    document.body.requestPointerLock = document.body.requestPointerLock || document.body.webkitRequestPointerLock;
+                    if (document.body.requestPointerLock) {
+                        document.body.requestPointerLock();
+                    }
+                }
+            }
+
+            mapDeviceHardwareEvents() {
+                // Keyboard Processing Filters
+                window.addEventListener('keydown', (e) => {
+                    if (document.activeElement === document.getElementById('chat-input-node')) {
+                        if (e.key === 'Enter') this.context.executeChatSubmissionFlow();
+                        return;
+                    }
+                    if (e.code in this.keysStateMap) this.keysStateMap[e.code] = true;
+                });
+
+                window.addEventListener('keyup', (e) => {
+                    if (e.code in this.keysStateMap) this.keysStateMap[e.code] = false;
+                });
+
+                // Desktop Mouse Rotation Mapping Intercepts
+                window.addEventListener('mousemove', (e) => {
+                    if (document.pointerLockElement === document.body || document.webkitPointerLockElement === document.body) {
+                        // Buffer rotation increments smoothly into tracking variables instead of hard snapping
+                        this.targetAngleYaw -= e.movementX * 0.0022;
+                        this.targetAnglePitch -= e.movementY * 0.0022;
+                        this.targetAnglePitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, this.targetAnglePitch));
+                    }
+                });
+
+                // Mouse Click Firing Route
+                window.addEventListener('mousedown', (e) => {
+                    if (this.context.activeState && document.pointerLockElement === document.body) {
+                        if (e.button === 0) this.context.player.executeWeaponReleaseSequence();
+                    }
+                });
+
+                // Interface Mode Tab Selection Controls
+                const selectionTabs = document.querySelectorAll('.tier-tab');
+                selectionTabs.forEach(tab => {
+                    tab.onclick = (e) => {
+                        selectionTabs.forEach(t => t.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.context.selectedCombatTier = e.target.getAttribute('data-tier');
+                    };
+                });
+
+                document.getElementById('btn-execute-deployment').onclick = () => this.context.executeDeploymentFlow();
+
+                // Establish Decoupled Multi-Touch Surface Event Triggers
+                const surfaceMove = document.getElementById('trackpad-move-boundary');
+                const surfaceLook = document.getElementById('trackpad-look-boundary');
+
+                // 1. Process Isolated Movement Interface Region
+                surfaceMove.addEventListener('pointerdown', (e) => {
+                    e.preventDefault();
+                    this.activePointerIdMove = e.pointerId;
+                    this.originPointMove.set(e.clientX, e.clientY);
+                    
+                    const visualHousing = document.getElementById('virtual-joystick-housing');
+                    visualHousing.style.left = `${e.clientX}px`;
+                    visualHousing.style.top = `${e.clientY}px`;
+                    visualHousing.style.display = 'block';
+                    
+                    document.getElementById('virtual-joystick-puck').style.transform = 'translate(0px, 0px)';
+                });
+
+                window.addEventListener('pointermove', (e) => {
+                    // Update movement vector tracking coordinates
+                    if (e.pointerId === this.activePointerIdMove) {
+                        const translationDelta = new THREE.Vector2(e.clientX, e.clientY).sub(this.originPointMove);
+                        const boundMaxLimit = 42;
+                        
+                        if (translationDelta.length() > boundMaxLimit) {
+                            translationDelta.setLength(boundMaxLimit);
+                        }
+                        
+                        document.getElementById('virtual-joystick-puck').style.transform = `translate(${translationDelta.x}px, ${translationDelta.y}px)`;
+                        this.translationScalarVector.set(translationDelta.x / boundMaxLimit, -(translationDelta.y / boundMaxLimit));
+                    }
+                    
+                    // Look Zone Trackpad Processor - Modifies rotation values without unexpected camera angle changes
+                    if (e.pointerId === this.activePointerIdLook) {
+                        const swipeIncrementX = e.clientX - this.lastRecordedPointLook.x;
+                        const swipeIncrementY = e.clientY - this.lastRecordedPointLook.y;
+                        
+                        this.lastRecordedPointLook.set(e.clientX, e.clientY);
+
+                        this.targetAngleYaw -= swipeIncrementX * 0.0045;
+                        this.targetAnglePitch -= swipeIncrementY * 0.0045;
+                        this.targetAnglePitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, this.targetAnglePitch));
+                    }
+                });
+
+                const tearDownJoystickInputs = (e) => {
+                    if (e.pointerId === this.activePointerIdMove) {
+                        this.activePointerIdMove = null;
+                        this.translationScalarVector.set(0, 0);
+                        document.getElementById('virtual-joystick-housing').style.display = 'none';
+                    }
+                };
+                surfaceMove.addEventListener('pointerup', tearDownJoystickInputs);
+                surfaceMove.addEventListener('pointercancel', tearDownJoystickInputs);
+
+                // 2. Process Isolated Viewport Rotation Region
+                surfaceLook.addEventListener('pointerdown', (e) => {
+                    e.preventDefault();
+                    this.activePointerIdLook = e.pointerId;
+                    this.lastRecordedPointLook.set(e.clientX, e.clientY);
+                });
+
+                const tearDownLookInputs = (e) => {
+                    if (e.pointerId === this.activePointerIdLook) {
+                        this.activePointerIdLook = null;
+                    }
+                };
+                surfaceLook.addEventListener('pointerup', tearDownLookInputs);
+                surfaceLook.addEventListener('pointercancel', tearDownLookInputs);
+
+                // Wire up standard mobile functional action nodes
+                document.getElementById('node-trigger-fire').onclick = () => this.context.player.executeWeaponReleaseSequence();
+                document.getElementById('node-trigger-jump').onclick = () => {
+                    this.keysStateMap.Space = true;
+                    setTimeout(() => { this.keysStateMap.Space = false; }, 40);
+                };
+                document.getElementById('node-trigger-swap').onclick = () => this.context.player.toggleActiveLoadoutSlot();
+                document.getElementById('node-trigger-medkit').onclick = () => this.context.player.consumeMedkitPayload();
+                document.getElementById('node-trigger-move').onclick = () => this.context.player.executeTierAbilityStrike();
+
+                document.getElementById('btn-action-respawn').onclick = () => this.context.player.triggerRespawnCycle();
+                document.getElementById('btn-action-leave').onclick = () => location.reload();
+            }
+
+            /**
+             * Linear Interpolation Rotation Smoothing Logic
+             * Mitigates rendering lag by decoupling hardware updates from target vectors
+             */
+            applyCameraDampingInterpolation() {
+                this.angleYaw += (this.targetAngleYaw - this.angleYaw) * this.smoothingDampFactor;
+                this.anglePitch += (this.targetAnglePitch - this.anglePitch) * this.smoothingDampFactor;
+
+                const matrixQuaternion = new THREE.Quaternion();
+                matrixQuaternion.setFromEuler(new THREE.Euler(this.anglePitch, this.angleYaw, 0, 'YXZ'));
+                this.context.camera.quaternion.copy(matrixQuaternion);
+            }
+        }
+
+        // --- LOCAL PLAYER CONTROLLER & LIFE-CYCLE MODULE ---
+        class LocalPlayerController {
+            constructor(coreContext) {
+                this.context = coreContext;
+                
+                // Instantiate fundamental vitals tracking models
+                this.health = EngineConfig.Vitals.MaxHP;
+                this.shield = EngineConfig.Vitals.MaxShield;
+                this.mana = EngineConfig.Vitals.MaxMana; // Tracking up to max analytical limit 200%
+                
+                this.coords = new THREE.Vector3(0, 8, 0);
+                this.velocity = new THREE.Vector3();
+                this.groundedFlag = false;
+                
+                this.inventoryMedkits = 1; // Strict lifetime cap asset constraint
+                this.weaponLoadoutSlots = [EngineConfig.Weapons.PISTOL, EngineConfig.Weapons.RIFLE];
+                this.activeWeaponIndex = 0;
+                this.lastFiredTimeInstance = 0;
+
+                // Healing Cooldown Multipliers
+                this.timeSinceLastDamageAccrued = 0;
+                this.timeAccumulatedRegenTick = 0;
+            }
+
+            get callsign() {
+                return document.getElementById('node-player-identity').value || "Survivor";
+            }
+
+            get activeWeapon() {
+                return this.weaponLoadoutSlots[this.activeWeaponIndex];
+            }
+
+            reinitializeStateData() {
+                this.health = EngineConfig.Vitals.MaxHP;
+                this.shield = EngineConfig.Vitals.MaxShield;
+                this.mana = EngineConfig.Vitals.MaxMana; // 200% complete fill mapping
+                this.inventoryMedkits = 1;
+                
+                this.coords.set(0, 20, 0);
+                this.velocity.set(0, 0, 0);
+                
+                document.getElementById('node-trigger-medkit').innerText = `MEDKIT (${this.inventoryMedkits})`;
+                document.getElementById('termination-modal').style.display = 'none';
+                this.refreshDashboardGauges();
+            }
+
+            evaluateFrameTransformation(deltaSeconds) {
+                if (this.health <= 0) return;
+
+                // 1. Process Translation Direction Calculations
+                const activeKeys = this.context.inputs.keysStateMap;
+                const dynamicAxes = this.context.inputs.translationScalarVector;
+                
+                let coordinateZ = 0;
+                let coordinateX = 0;
+
+                if (activeKeys.KeyW) coordinateZ += 1;
+                if (activeKeys.KeyS) coordinateZ -= 1;
+                if (activeKeys.KeyD) coordinateX += 1;
+                if (activeKeys.KeyA) coordinateX -= 1;
+
+                // Sync trackpad values if keyboard remains clear of entry inputs
+                if (coordinateZ === 0 && coordinateX === 0) {
+                    coordinateZ = dynamicAxes.y;
+                    coordinateX = dynamicAxes.x;
+                }
+
+                const orientationDirection = new THREE.Vector3(coordinateX, 0, -coordinateZ).normalize();
+                const viewEuler = new THREE.Euler(0, this.context.inputs.angleYaw, 0, 'YXZ');
+                orientationDirection.applyEuler(viewEuler);
+
+                this.velocity.x = orientationDirection.x * EngineConfig.Vitals.SpeedBase;
+                this.velocity.z = orientationDirection.z * EngineConfig.Vitals.SpeedBase;
+
+                // 2. Gravitational Physics Multiplier Loop
+                this.velocity.y -= 34.0 * deltaSeconds;
+                this.coords.addScaledVector(this.velocity, deltaSeconds);
+
+                // Lock tracking transformations exactly to coordinate matrix elevation points
+                const groundIntersectionHeight = this.context.resolveHeightAtCoordinate(this.coords.x, this.coords.z);
+                const baselineYOffsetHeight = groundIntersectionHeight + 2.6; // Anchor camera at character height
+
+                if (this.coords.y <= baselineYOffsetHeight) {
+                    this.coords.y = baselineYOffsetHeight;
+                    this.velocity.y = 0;
+                    this.groundedFlag = true;
+                } else {
+                    this.groundedFlag = false;
+                }
+
+                if (activeKeys.Space && this.groundedFlag) {
+                    this.velocity.y = 13.5; // Jump vertical velocity impulse force
+                    this.groundedFlag = false;
+                }
+
+                this.context.camera.position.copy(this.coords);
+
+                // 3. Process Healing System Updates
+                this.evaluatePassiveVitalsRegeneration(deltaSeconds);
+            }
+
+            evaluatePassiveVitalsRegeneration(deltaSeconds) {
+                const stepMilliseconds = deltaSeconds * 1000;
+                this.timeSinceLastDamageAccrued += stepMilliseconds;
+
+                if (this.timeSinceLastDamageAccrued >= EngineConfig.Vitals.RegenCooldownTime) {
+                    this.timeAccumulatedRegenTick += stepMilliseconds;
+                    if (this.timeAccumulatedRegenTick >= EngineConfig.Vitals.RegenTickPeriod) {
+                        
+                        // Regenerate structural health pools first
+                        if (this.health < EngineConfig.Vitals.MaxHP) {
+                            this.health = Math.min(EngineConfig.Vitals.MaxHP, this.health + EngineConfig.Vitals.RegenRate);
+                        }
+                        
+                        // Passive replenishment recovery mapping for the 200% mana stat bar
+                        if (this.mana < EngineConfig.Vitals.MaxMana) {
+                            this.mana = Math.min(EngineConfig.Vitals.MaxMana, this.mana + 10);
+                        }
+
+                        this.refreshDashboardGauges();
+                        this.timeAccumulatedRegenTick = 0;
+                    }
+                }
+            }
+
+            executeWeaponReleaseSequence() {
+                if (this.health <= 0) return;
+                const timeCurrent = performance.now();
+                if (timeCurrent - this.lastFiredTimeInstance < this.activeWeapon.interval) return;
+
+                this.lastFiredTimeInstance = timeCurrent;
+
+                const vectorLookForward = new THREE.Vector3();
+                this.context.camera.getWorldDirection(vectorLookForward);
+
+                // Fire slightly ahead of the camera lens bounding bounds
+                const vectorSpawnOrigin = this.coords.clone().addScaledVector(vectorLookForward, 1.6);
+
+                const instanceBullet = new PhysicalDodgeableProjectile(
+                    vectorSpawnOrigin, vectorLookForward, this.activeWeapon, true, this.context
+                );
+                this.context.projectilesList.push(instanceBullet);
+
+                // Route projectile activation metrics to network endpoints
+                if (this.context.socket && this.context.socket.connected) {
+                    this.context.socket.emit("projectile_discharge_event", {
+                        origin: { x: vectorSpawnOrigin.x, y: vectorSpawnOrigin.y, z: vectorSpawnOrigin.z },
+                        direction: { x: vectorLookForward.x, y: vectorLookForward.y, z: vectorLookForward.z },
+                        weaponProfile: this.activeWeapon
+                    });
+                }
+
+                // Smooth operational kickback rendering visual
+                gsap.fromTo(this.context.camera.position,
+                    { y: this.coords.y },
+                    { y: this.coords.y - 0.1, duration: 0.04, yoyo: true, repeat: 1 }
+                );
+            }
+
+            executeTierAbilityStrike() {
+                if (this.health <= 0) return;
+                
+                const variantTier = this.context.selectedCombatTier;
+                
+                // Verify activation resource cost parameters against current 200% mana storage pools
+                if (this.mana < 40) {
+                    this.context.pushSystemChatLog("ERROR: Inadequate Mana energy cells to route tactical move actions.");
+                    return;
+                }
+
+                this.mana -= 40;
+                this.refreshDashboardGauges();
+
+                this.context.pushSystemChatLog(`COMBAT: Initializing Ability sequence profile -> Tier Variant: [${variantTier.toUpperCase()}]`);
+
+                if (variantTier === "common") {
+                    // Sonic Wave Blast Field Definition
+                    this.instantiateVisualShockwaveRing(0xcbd5e1, 14);
+                } 
+                else if (variantTier === "rare") {
+                    // Rare tier triple capability branch: Execute Vortex Jump boost
+                    this.velocity.y = 19.0;
+                    this.groundedFlag = false;
+                    this.instantiateVisualShockwaveRing(0x3b82f6, 8);
+                } 
+                else if (variantTier === "legendary") {
+                    // Route complete 5-element script conditions
+                    this.executeLegendaryAbilityPipeline();
+                }
+            }
+
+            executeLegendaryAbilityPipeline() {
+                // Randomly cycles or sequence-triggers the five critical historic variables
+                const selectionArray = ["electro", "inferno", "deluge", "glacier", "topspeed"];
+                const pick = selectionArray[Math.floor(Math.random() * selectionArray.length)];
+                
+                const orientationGaze = new THREE.Vector3();
+                this.context.camera.getWorldDirection(orientationGaze);
+
+                this.context.pushSystemChatLog(`LEGENDARY ELEMENT TRIGGERED: -> [${pick.toUpperCase()}]`);
+
+                if (pick === "electro") {
+                    const profile = { name: "Electro Bolt", velocity: 130, damage: 45, diameter: 0.6, hue: 0x22d3ee };
+                    const bolt = new PhysicalDodgeableProjectile(this.coords.clone().addScaledVector(orientationGaze, 2), orientationGaze, profile, true, this.context);
+                    this.context.projectilesList.push(bolt);
+                } 
+                else if (pick === "inferno") {
+                    this.instantiateVisualShockwaveRing(0xeab308, 25);
+                    // Splash damage calculations targeting proximal bots
+                    this.context.opponentsList.forEach(bot => {
+                        if (this.coords.distanceTo(bot.meshContainerGroup.position) < 25) {
+                            bot.inflictStructuralDamage(40);
+                        }
+                    });
+                } 
+                else if (pick === "deluge") {
+                    const profile = { name: "Deluge Core", velocity: 20, damage: 35, diameter: 1.2, hue: 0x3b82f6 };
+                    const wave = new PhysicalDodgeableProjectile(this.coords.clone().addScaledVector(orientationGaze, 2), orientationGaze, profile, true, this.context);
+                    this.context.projectilesList.push(wave);
+                } 
+                else if (pick === "glacier") {
+                    // Spawns a real 3D block mesh directly in front of client view plane coordinates to act as temporary wall cover
+                    const wallGeo = new THREE.BoxGeometry(6, 5, 1.5);
+                    const wallMat = new THREE.MeshStandardMaterial({ color: 0x93c5fd, transparent: true, opacity: 0.75, roughness: 0.1 });
+                    const wallMesh = new THREE.Mesh(wallGeo, wallMat);
+                    
+                    const placementVector = this.coords.clone().addScaledVector(orientationGaze, 6);
+                    placementVector.y = this.context.resolveHeightAtCoordinate(placementVector.x, placementVector.z) + 2.5;
+                    wallMesh.position.copy(placementVector);
+                    
+                    this.context.scene.add(wallMesh);
+                    setTimeout(() => { this.context.scene.remove(wallMesh); wallGeo.dispose(); wallMat.dispose(); }, 7000);
+                } 
+                else if (pick === "topspeed") {
+                    // Apply instant acceleration scalar multiplication updates over time profiles via GSAP
+                    const internalRef = EngineConfig.Vitals;
+                    const baselineCache = internalRef.SpeedBase;
+                    internalRef.SpeedBase = baselineCache * 2.5;
+                    
+                    setTimeout(() => { internalRef.SpeedBase = baselineCache; }, 3500);
+                }
+            }
+
+            instantiateVisualShockwaveRing(hexColor, expansionBoundMax) {
+                const loopGeometry = new THREE.RingGeometry(0.2, 1, 16);
+                const loopMaterial = new THREE.MeshBasicMaterial({ color: hexColor, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
+                const loopMesh = new THREE.Mesh(loopGeometry, loopMaterial);
+                
+                loopMesh.position.copy(this.coords);
+                loopMesh.position.y = this.context.resolveHeightAtCoordinate(this.coords.x, this.coords.z) + 0.2;
+                loopMesh.rotation.x = Math.PI / 2;
+                this.context.scene.add(loopMesh);
+
+                gsap.to(loopMesh.scale, {
+                    x: expansionBoundMax, y: expansionBoundMax, z: expansionBoundMax, duration: 0.6,
+                    onComplete: () => {
+                        this.context.scene.remove(loopMesh);
+                        loopGeometry.dispose();
+                        loopMaterial.dispose();
+                    }
+                });
+            }
+
+            toggleActiveLoadoutSlot() {
+                this.activeWeaponIndex = (this.activeWeaponIndex + 1) % this.weaponLoadoutSlots.length;
+                document.getElementById('badge-ui-weapon').innerText = `WEAPON: ${this.activeWeapon.name.toUpperCase()}`;
+            }
+
+            consumeMedkitPayload() {
+                if (this.health <= 0) return;
+
+                // 1. Check Multi-Targeting Proximity Hooks (Give to Player mechanics)
+                let evaluatedPeerRecipient = null;
+                this.context.networkPeersMap.forEach((peerProxy) => {
+                    const rangeDistance = this.coords.distanceTo(peerProxy.proxyGroup.position);
+                    if (rangeDistance < 6.0) {
+                        evaluatedPeerRecipient = peerProxy;
+                    }
+                });
+
+                if (evaluatedPeerRecipient) {
+                    if (this.inventoryMedkits <= 0) {
+                        this.context.pushSystemChatLog("ERROR: Life-cap allotment empty. Unable to transfer resource cells.");
+                        return;
+                    }
+                    this.inventoryMedkits--;
+                    document.getElementById('node-trigger-medkit').innerText = `MEDKIT (${this.inventoryMedkits})`;
+                    
+                    if (this.context.socket && this.context.socket.connected) {
+                        this.context.socket.emit("transfer_healing_payload", { recipientId: evaluatedPeerRecipient.networkId });
+                    }
+                    this.context.pushSystemChatLog(` ✨ DISTRIBUTED MEDKIT: Delivered vital healing compounds to target unit: ${evaluatedPeerRecipient.playerName}`);
+                    return;
+                }
+
+                // 2. Fallback execution path: Apply directly to self
+                if (this.health === EngineConfig.Vitals.MaxHP) return;
+                if (this.inventoryMedkits <= 0) {
+                    this.context.pushSystemChatLog("ERROR: Life-cap configuration limit spent. Medkits allow only one lifecycle routing action.");
+                    return;
+                }
+
+                this.health = EngineConfig.Vitals.MaxHP;
+                this.inventoryMedkits--;
+                
+                document.getElementById('node-trigger-medkit').innerText = `MEDKIT (${this.inventoryMedkits})`;
+                this.refreshDashboardGauges();
+                this.context.pushSystemChatLog("✨ MEDIC SELF-APPLICATION: Structural health parameters maxed.");
+            }
+
+            inflictStructuralDamage(damageVolume) {
+                this.timeSinceLastDamageAccrued = 0; // Break passive baseline recovery sequencing clocks instantly
+
                 if (this.shield > 0) {
-                    this.shield -= amount;
+                    this.shield -= damageVolume;
                     if (this.shield < 0) {
-                        this.health += this.shield; 
+                        this.health += this.shield; // Route overflowing negative values to physical health layer
                         this.shield = 0;
                     }
                 } else {
-                    this.health -= amount;
+                    this.health -= damageVolume;
                 }
 
-                VFX.spawnDamageNumbers(this.mesh.position, amount, this.shield > 0 ? 0x60a5fa : 0xff2222);
-
-                if (this === State.localPlayer) {
-                    updateHUD();
-                    gsap.fromTo(".hud-layer", { backgroundColor: "rgba(255,0,0,0.4)" }, { backgroundColor: "rgba(255,0,0,0)", duration: 0.6 });
-                }
+                this.refreshDashboardGauges();
 
                 if (this.health <= 0) {
-                    this.die(instigator);
+                    this.executeTerminationSequence();
                 }
             }
 
-            die(killer) {
-                this.isDead = true;
+            refreshDashboardGauges() {
+                const ratioHP = Math.max(0, (this.health / EngineConfig.Vitals.MaxHP) * 100);
+                const ratioSH = Math.max(0, (this.shield / EngineConfig.Vitals.MaxShield) * 100);
+                
+                // Track current state mapping scaled perfectly across the analytical 200% maximum value line
+                const ratioMN = Math.max(0, (this.mana / EngineConfig.Vitals.MaxMana) * 100);
+
+                document.getElementById('bar-display-hp').style.width = `${ratioHP}%`;
+                document.getElementById('bar-display-sh').style.width = `${ratioSH}%`;
+                document.getElementById('bar-display-mn').style.width = `${ratioMN}%`;
+            }
+
+            executeTerminationSequence() {
                 this.health = 0;
-                
-                // Advanced Ragdoll simulation
-                gsap.to(this.mesh.rotation, { x: -Math.PI/2, z: (Math.random()-0.5), duration: 0.6, ease: "bounce.out" });
-                gsap.to(this.mesh.position, { y: -1, duration: 0.6 });
-                
-                // Drop loot effect
-                VFX.createImpact(this.mesh.position, this.weapon.color, 15);
-                
-                if (killer) {
-                    killer.kills++;
-                    announceKill(killer.name, this.name, killer.weapon.name);
-                    updateLeaderboard();
-                }
-
-                if (this === State.localPlayer) {
-                    setTimeout(() => triggerGameOver(), 2500);
-                } else {
-                    setTimeout(() => {
-                        scene.remove(this.mesh);
-                        State.actors.delete(this.id);
-                    }, 4000);
-                }
+                this.refreshDashboardGauges();
+                document.exitPointerLock();
+                document.getElementById('termination-modal').style.display = 'flex';
             }
 
-            updatePhysics(delta) {
-                if (!this.isGrounded) {
-                    this.velocity.y -= CONFIG.GRAVITY * delta;
-                }
+            triggerRespawnCycle() {
+                this.reinitializeStateData();
+                this.context.inputs.bindPointerLockContext();
+            }
+        }
+
+        // --- REAL-TIME PHYSICAL DODGEABLE PROJECTILE SYSTEM ---
+        class PhysicalDodgeableProjectile {
+            constructor(vectorSpawn, vectorDirection, configSpecs, sourceIsLocalPlayer, coreContext) {
+                this.context = coreContext;
+                this.sourceIsLocalPlayer = sourceIsLocalPlayer;
+                this.velocityScale = configSpecs.velocity;
+                this.potentialDamage = configSpecs.damage;
                 
-                this.mesh.position.addScaledVector(this.velocity, delta);
+                this.normalizedTrajectory = vectorDirection.clone().normalize();
+                this.expiredStateFlag = false;
+                this.totalSurvivalLifespan = 0;
 
-                // Basic Floor Collision
-                if (this.mesh.position.y <= 0) {
-                    this.mesh.position.y = 0;
-                    this.velocity.y = 0;
-                    this.isGrounded = true;
-                }
-
-                // World Boundary
-                const b = CONFIG.WORLD_SIZE / 2 - 2;
-                this.mesh.position.x = THREE.MathUtils.clamp(this.mesh.position.x, -b, b);
-                this.mesh.position.z = THREE.MathUtils.clamp(this.mesh.position.z, -b, b);
-
-                // Scenery Collisions (Trees)
-                State.sceneryData.forEach(obj => {
-                    const dx = this.mesh.position.x - obj.x;
-                    const dz = this.mesh.position.z - obj.z;
-                    const dist = Math.sqrt(dx*dx + dz*dz);
-                    if (dist < obj.radius + 1.2) {
-                        const push = (obj.radius + 1.2 - dist);
-                        const nx = dx / dist; const nz = dz / dist;
-                        this.mesh.position.x += nx * push;
-                        this.mesh.position.z += nz * push;
-                    }
+                // Build Visible Projectile Telemetry Shapes
+                const radiusSize = configSpecs.diameter;
+                const geometricHull = new THREE.SphereGeometry(radiusSize, 5, 5);
+                const baseMaterial = new THREE.MeshBasicMaterial({
+                    color: configSpecs.hue,
+                    fog: false
                 });
+
+                this.projectileMeshNode = new THREE.Mesh(geometricHull, baseMaterial);
+                this.projectileMeshNode.position.copy(vectorSpawn);
+                this.context.scene.add(this.projectileMeshNode);
             }
 
-            updateAnimation(delta) {
-                const speed2D = Math.sqrt(this.velocity.x**2 + this.velocity.z**2);
-                const isMoving = speed2D > 0.5;
-
-                if (isMoving) {
-                    this.animClock += delta * speed2D * 1.1;
-                    this.legL.rotation.x = Math.sin(this.animClock) * 0.9;
-                    this.legR.rotation.x = Math.sin(this.animClock + Math.PI) * 0.9;
-                    this.armL.rotation.x = Math.sin(this.animClock + Math.PI) * 0.6;
-                    
-                    // Aiming arm stabilization while running
-                    this.armR.rotation.x = THREE.MathUtils.lerp(this.armR.rotation.x, -Math.PI/2.2, 0.2);
-                    this.torso.position.y = 2.4 + Math.abs(Math.sin(this.animClock * 2)) * 0.2;
-                } else {
-                    this.legL.rotation.x = THREE.MathUtils.lerp(this.legL.rotation.x, 0, 0.1);
-                    this.legR.rotation.x = THREE.MathUtils.lerp(this.legR.rotation.x, 0, 0.1);
-                    this.armL.rotation.x = THREE.MathUtils.lerp(this.armL.rotation.x, 0, 0.1);
-                    this.armR.rotation.x = THREE.MathUtils.lerp(this.armR.rotation.x, -Math.PI/2.1, 0.1);
-                    
-                    this.animClock += delta * 1.5;
-                    this.torso.position.y = 2.4 + Math.sin(this.animClock) * 0.06;
+            advanceProjectileFlightTime(deltaSeconds) {
+                this.totalSurvivalLifespan += deltaSeconds;
+                
+                // Set boundary limit at 3.0 seconds flight execution age
+                if (this.totalSurvivalLifespan > 3.0) {
+                    this.garbageCollectVisualObjects();
+                    return;
                 }
+
+                const vectorStepIncrement = this.normalizedTrajectory.clone().multiplyScalar(this.velocityScale * deltaSeconds);
+                this.projectileMeshNode.position.add(vectorStepIncrement);
+
+                this.detectCollisionIntersections();
             }
 
-            fireWeapon(targetVec) {
-                const now = State.clock.getElapsedTime();
-                if (now - this.lastFireTime < this.weapon.cooldown) return;
-                this.lastFireTime = now;
+            detectCollisionIntersections() {
+                const vectorCurrentPosition = this.projectileMeshNode.position;
 
-                // Sharp recoil animation
-                gsap.fromTo(this.armR.rotation, { x: -Math.PI/1.7 }, { x: -Math.PI/2.1, duration: 0.15 });
+                if (this.sourceIsLocalPlayer) {
+                    // Check intersections mapping against AI opponent groups
+                    for (let bot of this.context.opponentsList) {
+                        if (bot.currentHealth > 0 && vectorCurrentPosition.distanceTo(bot.meshContainerGroup.position) < 2.3) {
+                            bot.inflictStructuralDamage(this.potentialDamage);
+                            this.garbageCollectVisualObjects();
+                            return;
+                        }
+                    }
 
-                const origin = new THREE.Vector3();
-                this.muzzlePoint.getWorldPosition(origin);
-                
-                // Base direction
-                const baseDir = new THREE.Vector3().subVectors(targetVec, origin).normalize();
-                
-                // Multi-shot logic based on tier
-                for(let i=0; i < this.weapon.moves; i++) { 
-                    
-                    // Apply weapon spread
-                    const spreadDir = new THREE.Vector3().copy(baseDir);
-                    spreadDir.x += (Math.random()-0.5) * this.weapon.spread;
-                    spreadDir.y += (Math.random()-0.5) * this.weapon.spread;
-                    spreadDir.z += (Math.random()-0.5) * this.weapon.spread;
-                    spreadDir.normalize();
-
-                    const ray = new THREE.Raycaster(origin, spreadDir);
-                    const targets = [];
-                    State.actors.forEach(actor => {
-                        if (actor !== this && !actor.isDead) {
-                            actor.mesh.children.forEach(c => targets.push(c));
+                    // Check intersections mapping against online player nodes stored inside state charts
+                    this.context.networkPeersMap.forEach((peerProxy) => {
+                        if (vectorCurrentPosition.distanceTo(peerProxy.proxyGroup.position) < 2.4) {
+                            // Inform proxy channels locally of hit confirmation loops if server architecture allows
+                            this.garbageCollectVisualObjects();
                         }
                     });
-
-                    const hits = ray.intersectObjects(targets, true);
-                    let endPoint = new THREE.Vector3().copy(origin).addScaledVector(spreadDir, 150);
-                    let hitActor = null;
-
-                    if (hits.length > 0) {
-                        endPoint.copy(hits[0].point);
-                        if (hits[0].object.userData.parentActor) {
-                            hitActor = hits[0].object.userData.parentActor;
-                        }
+                } else {
+                    // Check intersection conditions target mapping local client positioning matrix bounds
+                    const structuralDistance = vectorCurrentPosition.distanceTo(this.context.player.coords);
+                    if (structuralDistance < 2.0) {
+                        this.context.player.inflictStructuralDamage(this.potentialDamage);
+                        this.garbageCollectVisualObjects();
                     }
+                }
 
-                    VFX.createTracer(origin, endPoint, this.weapon.color);
-                    VFX.createImpact(endPoint, hitActor ? 0xff2222 : 0xffffaa);
-
-                    if (hitActor) {
-                        // Calculate damage falloff over distance
-                        const dist = origin.distanceTo(endPoint);
-                        let finalDamage = this.weapon.damage;
-                        if(dist > 50) finalDamage *= 0.7;
-                        
-                        hitActor.applyDamage(finalDamage, this);
-                    }
+                // Check surface clipping constraints mapping exactly to slope profiles
+                const localGroundHeightFloor = this.context.resolveHeightAtCoordinate(vectorCurrentPosition.x, vectorCurrentPosition.z);
+                if (vectorCurrentPosition.y <= localGroundHeightFloor) {
+                    this.garbageCollectVisualObjects();
                 }
             }
 
-            update(delta) {
-                if (this.isDead) return;
-                this.updatePhysics(delta);
-                this.updateAnimation(delta);
+            garbageCollectVisualObjects() {
+                this.expiredStateFlag = true;
+                this.context.scene.remove(this.projectileMeshNode);
+                this.projectileMeshNode.geometry.dispose();
+                this.projectileMeshNode.material.dispose();
             }
         }
 
-        // Subclass: Local Player Controller
-        class PlayerActor extends Actor {
-            constructor(id, name) {
-                super(id, name, 0x1e3a8a); // Dark blue for player
+        // --- MANAGED WORLD ENVIRONMENT BOT ENTIRE LOGIC ---
+        class ManagedAIEnemy {
+            constructor(botIdentifier, vectorSpawnCoordinate, coreContext) {
+                this.context = coreContext;
+                this.botId = botIdentifier;
+                
+                // Balanced health pools to maintain rewarding combat speed loops
+                this.maxHealthCapacity = 50;
+                this.currentHealth = this.maxHealthCapacity;
+                
+                this.patrolOriginPoint = vectorSpawnCoordinate.clone();
+                this.navigationDestinationTarget = vectorSpawnCoordinate.clone();
+                this.aiDecisionTimerClock = Math.random() * 1.5;
+                this.lastAttackTimestamp = 0;
+
+                this.assembleBotVisualHierarchy(vectorSpawnCoordinate);
             }
 
-            processInputs(delta) {
-                const moveVec = new THREE.Vector3();
-                
-                // Input maps directly from the new InputController (Touch Joystick or WASD)
-                const z = Input.backward - Input.forward;
-                const x = Input.right - Input.left;
-                
-                moveVec.set(x, 0, z);
+            assembleBotVisualHierarchy(spawnVector) {
+                this.meshContainerGroup = new THREE.Group();
+                this.meshContainerGroup.position.copy(spawnVector);
 
-                // Orient movement relative to the current CAMERA angle (Theta)
-                moveVec.applyAxisAngle(new THREE.Vector3(0,1,0), State.cameraTheta);
-                
-                if (moveVec.length() > 1) moveVec.normalize();
-                
-                this.velocity.x = moveVec.x * this.speed;
-                this.velocity.z = moveVec.z * this.speed;
-                
-                // Turn mesh to face movement direction (if not aiming in FPS)
-                if (moveVec.lengthSq() > 0.01 && State.cameraDistance > 0) {
-                    const targetRot = Math.atan2(moveVec.x, moveVec.z);
-                    let diff = targetRot - this.mesh.rotation.y;
-                    while (diff < -Math.PI) diff += Math.PI * 2;
-                    while (diff > Math.PI) diff -= Math.PI * 2;
-                    this.mesh.rotation.y += diff * 12 * delta;
-                }
-
-                // Jump logic
-                if (Input.jump && this.isGrounded) {
-                    this.velocity.y = 15.0; // Higher jump
-                    this.isGrounded = false;
-                    Input.jump = false; 
-                }
-
-                // Firing logic
-                if (Input.fire) {
-                    // Center of screen raycast
-                    const raycaster = new THREE.Raycaster();
-                    raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-                    const aimPoint = new THREE.Vector3().copy(raycaster.ray.origin).addScaledVector(raycaster.ray.direction, 80);
-                    
-                    // In TPS, force player to rotate towards the crosshair while shooting
-                    if (State.cameraDistance > 0) {
-                        const aimDir = new THREE.Vector3().subVectors(aimPoint, this.mesh.position);
-                        const tRot = Math.atan2(aimDir.x, aimDir.z);
-                        let d = tRot - this.mesh.rotation.y;
-                        while (d < -Math.PI) d += Math.PI * 2;
-                        while (d > Math.PI) d -= Math.PI * 2;
-                        this.mesh.rotation.y += d * 15 * delta;
-                    }
-
-                    this.fireWeapon(aimPoint);
-                }
-            }
-
-            update(delta) {
-                if(!this.isDead) this.processInputs(delta);
-                super.update(delta);
-            }
-        }
-
-        // Subclass: Advanced AI
-        class BotAI extends Actor {
-            constructor(id) {
-                super(id, "Bot_" + Math.floor(Math.random()*9999), CONFIG.COLORS.ENEMY_SKIN);
-                
-                this.aiState = "WANDER";
-                this.targetActor = null;
-                this.destPoint = new THREE.Vector3();
-                this.stateTimer = 0;
-                
-                // Bot weapon randomization
-                const roll = Math.random();
-                if(roll > 0.95) this.equipWeapon(WEAPON_TIERS.LEGENDARY_INFERNO);
-                else if(roll > 0.8) this.equipWeapon(WEAPON_TIERS.LEGENDARY_SPEED);
-                else if(roll > 0.5) this.equipWeapon(WEAPON_TIERS.RARE);
-                else this.equipWeapon(WEAPON_TIERS.COMMON);
-
-                this.pickRandomDestination(30);
-            }
-
-            pickRandomDestination(radius) {
-                const angle = Math.random() * Math.PI * 2;
-                this.destPoint.set(
-                    this.mesh.position.x + Math.cos(angle) * radius,
-                    0,
-                    this.mesh.position.z + Math.sin(angle) * radius
+                // Setup armor plating geometry profile parameters
+                const structuralChassisBox = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.8, 3.4, 1.8),
+                    new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.6 }) // Aggressive Red identification marker
                 );
+                structuralChassisBox.position.y = 1.7;
+                structuralChassisBox.castShadow = true;
+                this.meshContainerGroup.add(structuralChassisBox);
+
+                // Add orientation guidance illumination visors to aid tactical tracking
+                const guidanceVisorBar = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.4, 0.35, 0.4),
+                    new THREE.MeshBasicMaterial({ color: 0xfacc15 })
+                );
+                guidanceVisorBar.position.set(0, 2.7, 0.92);
+                this.meshContainerGroup.add(guidanceVisorBar);
+
+                this.context.scene.add(this.meshContainerGroup);
             }
 
-            processLogic(delta) {
-                this.stateTimer += delta;
-                let nearestDist = 9999;
-                this.targetActor = null;
+            processAIFrameExecution(deltaSeconds) {
+                if (this.currentHealth <= 0) return;
 
-                // Vision Sphere Check
-                State.actors.forEach(actor => {
-                    if (actor === this || actor.isDead) return;
-                    const d = this.mesh.position.distanceTo(actor.mesh.position);
-                    if (d < 70 && d < nearestDist) {
-                        nearestDist = d;
-                        this.targetActor = actor;
-                    }
-                });
+                this.aiDecisionTimerClock += deltaSeconds;
+                const distanceTrackingToClient = this.meshContainerGroup.position.distanceTo(this.context.player.coords);
 
-                // State Machine Transition
-                if (this.targetActor) {
-                    if (this.health < 30 && nearestDist < 20) {
-                        this.aiState = "FLEE";
-                    } else if (nearestDist < 30) {
-                        this.aiState = "ATTACK";
+                // Run navigation calculations on precise 2.0 second intervals
+                if (this.aiDecisionTimerClock > 2.0) {
+                    this.aiDecisionTimerClock = 0;
+                    if (distanceTrackingToClient > 50) {
+                        // Generate random coordinate positions around home point configurations
+                        const varianceAngle = Math.random() * Math.PI * 2;
+                        const movementRadiusDistance = 12;
+                        this.navigationDestinationTarget.set(
+                            this.patrolOriginPoint.x + Math.cos(varianceAngle) * movementRadiusDistance,
+                            0,
+                            this.patrolOriginPoint.z + Math.sin(varianceAngle) * movementRadiusDistance
+                        );
+                        this.navigationDestinationTarget.y = this.context.resolveHeightAtCoordinate(this.navigationDestinationTarget.x, this.navigationDestinationTarget.z);
                     } else {
-                        this.aiState = "CHASE";
+                        // Redirect navigation tracking matrix pathways directly toward target client
+                        this.navigationDestinationTarget.copy(this.context.player.coords);
                     }
-                } else {
-                    this.aiState = "WANDER";
                 }
 
-                // Execute State Logic
-                let moveTarget = new THREE.Vector3();
+                // Translate position coordinates toward buffered navigation targets
+                if (distanceTrackingToClient > 10) {
+                    const movementHeadingVector = new THREE.Vector3().subVectors(this.navigationDestinationTarget, this.meshContainerGroup.position);
+                    movementHeadingVector.y = 0;
+                    movementHeadingVector.normalize();
 
-                switch (this.aiState) {
-                    case "WANDER":
-                        this.speed = 5.0;
-                        if (this.mesh.position.distanceTo(this.destPoint) < 3 || this.stateTimer > 6) {
-                            this.pickRandomDestination(40);
-                            this.stateTimer = 0;
-                        }
-                        moveTarget.copy(this.destPoint);
-                        break;
+                    const speedScalarVelocity = 5.5; // Balanced velocity calculation to prioritize tracking evasion play styles
+                    this.meshContainerGroup.position.addScaledVector(movementHeadingVector, speedScalarVelocity * deltaSeconds);
                     
-                    case "CHASE":
-                        this.speed = 12.0;
-                        moveTarget.copy(this.targetActor.mesh.position);
-                        break;
-
-                    case "FLEE":
-                        this.speed = 14.0; // Sprint away
-                        const fleeDir = new THREE.Vector3().subVectors(this.mesh.position, this.targetActor.mesh.position).normalize();
-                        moveTarget.copy(this.mesh.position).addScaledVector(fleeDir, 20);
-                        break;
+                    // Maintain absolute coordinate alignment matching terrain slopes perfectly
+                    this.meshContainerGroup.position.y = this.context.resolveHeightAtCoordinate(this.meshContainerGroup.position.x, this.meshContainerGroup.position.z);
                     
-                    case "ATTACK":
-                        this.speed = 3.0; // Strafe slowly
-                        
-                        // Strafe logic
-                        if (this.stateTimer > 2) {
-                            this.pickRandomDestination(10);
-                            this.stateTimer = 0;
-                        }
-                        moveTarget.copy(this.destPoint);
-                        
-                        // Aim and Fire
-                        const aimPoint = new THREE.Vector3().copy(this.targetActor.mesh.position);
-                        aimPoint.y += 1.5; 
-                        
-                        // Artificial inaccuracy based on distance
-                        const err = nearestDist * 0.05;
-                        aimPoint.x += (Math.random()-0.5)*err;
-                        aimPoint.z += (Math.random()-0.5)*err;
-
-                        const aimDir = new THREE.Vector3().subVectors(aimPoint, this.mesh.position);
-                        this.mesh.rotation.y = Math.atan2(aimDir.x, aimDir.z);
-
-                        this.fireWeapon(aimPoint);
-                        break;
+                    const rotationHeadingAngle = Math.atan2(movementHeadingVector.x, movementHeadingVector.z);
+                    this.meshContainerGroup.rotation.y = rotationHeadingAngle;
                 }
 
-                // Vector Movement Application
-                if(this.aiState !== "ATTACK" || nearestDist > 15) {
-                    const dir = new THREE.Vector3().subVectors(moveTarget, this.mesh.position);
-                    dir.y = 0;
-                    if(dir.lengthSq() > 0.1) {
-                        dir.normalize();
-                        this.velocity.x = dir.x * this.speed;
-                        this.velocity.z = dir.z * this.speed;
-                        
-                        const targetRot = Math.atan2(dir.x, dir.z);
-                        let diff = targetRot - this.mesh.rotation.y;
-                        while(diff < -Math.PI) diff += Math.PI*2;
-                        while(diff > Math.PI) diff -= Math.PI*2;
-                        this.mesh.rotation.y += diff * 6 * delta;
-                    }
-                } else {
-                    this.velocity.x = 0; this.velocity.z = 0;
+                // Process attack actions matching verification distance rules
+                if (distanceTrackingToClient < 45 && this.context.player.health > 0) {
+                    this.evaluateAttackDischargeSequence();
                 }
             }
 
-            update(delta) {
-                if(!this.isDead) this.processLogic(delta);
-                super.update(delta);
-            }
-        }
+            evaluateAttackDischargeSequence() {
+                const timestampCurrent = performance.now();
+                // Balanced fire delay: 2000ms cooldown windows between slower dodgeable bullets
+                if (timestampCurrent - this.lastAttackTimestamp < 2000) return;
 
+                this.lastAttackTimestamp = timestampCurrent;
 
-        // --- VISUAL EFFECTS (VFX) MANAGER ---
-        const VFX = {
-            createTracer: (start, end, colorHex) => {
-                const geo = new THREE.BufferGeometry().setFromPoints([start, end]);
-                const mat = new THREE.LineBasicMaterial({ color: colorHex, linewidth: 4, transparent: true, opacity: 0.9 });
-                const line = new THREE.Line(geo, mat);
-                scene.add(line);
-                State.projectiles.push({ mesh: line, life: 0.08 }); // Fast decay
-            },
-
-            createImpact: (pos, colorHex, amount = 6) => {
-                const geo = new THREE.BoxGeometry(0.25, 0.25, 0.25);
-                const mat = new THREE.MeshBasicMaterial({ color: colorHex });
-                for(let i=0; i<amount; i++){
-                    const p = new THREE.Mesh(geo, mat);
-                    p.position.copy(pos);
-                    p.velocity = new THREE.Vector3((Math.random()-0.5)*15, Math.random()*15, (Math.random()-0.5)*15);
-                    scene.add(p);
-                    State.particles.push({ mesh: p, life: 0.5, vel: p.velocity });
-                }
-            },
-
-            spawnDamageNumbers: (pos, amount, colorHex) => {
-                const el = document.createElement('div');
-                el.innerText = `-${Math.floor(amount)}`;
-                el.style.position = 'absolute';
-                el.style.color = '#' + colorHex.toString(16).padStart(6, '0');
-                el.style.fontWeight = '900';
-                el.style.fontSize = '26px';
-                el.style.pointerEvents = 'none';
-                el.style.textShadow = '3px 3px 0 #000';
-                el.style.zIndex = '50';
-                document.body.appendChild(el);
-
-                const tempV = new THREE.Vector3().copy(pos);
-                tempV.y += 3.5; 
-                tempV.project(camera);
-                
-                const x = (tempV.x * .5 + .5) * window.innerWidth;
-                const y = (tempV.y * -.5 + .5) * window.innerHeight;
-                
-                el.style.left = `${x}px`;
-                el.style.top = `${y}px`;
-
-                gsap.to(el, {
-                    top: y - 60,
-                    opacity: 0,
-                    scale: 1.5,
-                    duration: 0.8,
-                    ease: "power2.out",
-                    onComplete: () => el.remove()
-                });
-            },
-
-            updateSystems: (delta) => {
-                for(let i = State.projectiles.length-1; i>=0; i--){
-                    let p = State.projectiles[i];
-                    p.life -= delta;
-                    if(p.life <= 0){
-                        scene.remove(p.mesh);
-                        p.mesh.geometry.dispose();
-                        p.mesh.material.dispose();
-                        State.projectiles.splice(i, 1);
-                    }
-                }
-                for(let i = State.particles.length-1; i>=0; i--){
-                    let p = State.particles[i];
-                    p.life -= delta;
-                    p.mesh.position.addScaledVector(p.vel, delta);
-                    p.vel.y -= CONFIG.GRAVITY * delta;
-                    if(p.life <= 0){
-                        scene.remove(p.mesh);
-                        p.mesh.geometry.dispose();
-                        p.mesh.material.dispose();
-                        State.particles.splice(i, 1);
-                    }
-                }
-            }
-        };
-
-
-        // --- UI UPDATERS ---
-        function updateHUD() {
-            if(!State.localPlayer) return;
-            document.getElementById('ui-health').innerText = `HP: ${Math.floor(State.localPlayer.health)}`;
-            document.getElementById('ui-shield').innerText = `SHIELD: ${Math.floor(State.localPlayer.shield)}`;
-            
-            const wName = State.localPlayer.weapon.name;
-            const wType = State.localPlayer.weapon.type;
-            document.getElementById('ui-weapon').innerHTML = `WEAPON: <span class="tier-${wType}">${wName}</span>`;
-        }
-
-        function updateLeaderboard() {
-            const arr = Array.from(State.actors.values()).map(a => ({name: a.name, k: a.kills}));
-            arr.sort((a,b) => b.k - a.k);
-            
-            let html = '';
-            for(let i=0; i<Math.min(5, arr.length); i++){
-                html += `<div class="lb-entry"><span>${arr[i].name}</span><strong>${arr[i].k}</strong></div>`;
-            }
-            document.getElementById('leaderboard-data').innerHTML = html;
-        }
-
-        function announceKill(killer, victim, weapon) {
-            const el = document.createElement('div');
-            el.className = 'kill-msg';
-            el.innerHTML = `<span style="color:var(--theme-primary)">${killer}</span> 💥 <span style="color:#ef4444">${victim}</span>`;
-            document.getElementById('killfeed').appendChild(el);
-            gsap.fromTo(el, {opacity: 0, scale: 0.5}, {opacity: 1, scale: 1, duration: 0.3, ease: "back.out"});
-            
-            setTimeout(() => {
-                gsap.to(el, {opacity: 0, y: -20, duration: 0.5, onComplete: ()=>el.remove()});
-            }, 3500);
-        }
-
-        // --- DYNAMIC CAMERA RIG (Roblox-style Orbit & Zoom) ---
-        function processCameraRig() {
-            if(!State.localPlayer || State.localPlayer.isDead) return;
-            
-            const playerPos = State.localPlayer.mesh.position;
-            
-            // Calculate spherical coordinates for orbit
-            const xOffset = State.cameraDistance * Math.sin(State.cameraPhi) * Math.sin(State.cameraTheta);
-            const yOffset = State.cameraDistance * Math.cos(State.cameraPhi);
-            const zOffset = State.cameraDistance * Math.sin(State.cameraPhi) * Math.cos(State.cameraTheta);
-
-            const targetCamPos = new THREE.Vector3(
-                playerPos.x + xOffset,
-                playerPos.y + 2.0 + yOffset, // Offset above head
-                playerPos.z + zOffset
-            );
-
-            // Basic Camera Collision with floor
-            if (targetCamPos.y < 0.5) targetCamPos.y = 0.5;
-
-            // Smooth interpolation
-            camera.position.lerp(targetCamPos, 0.3);
-
-            if (State.cameraDistance === 0) {
-                // First Person Mode
-                const lookDir = new THREE.Vector3(0,0,1)
-                    .applyAxisAngle(new THREE.Vector3(1,0,0), State.cameraPhi - Math.PI/2)
-                    .applyAxisAngle(new THREE.Vector3(0,1,0), State.cameraTheta);
-                
-                camera.lookAt(new THREE.Vector3().copy(camera.position).add(lookDir));
-                
-                // Make player invisible to self in FPS
-                State.localPlayer.mesh.visible = false;
-            } else {
-                // Third Person Orbit Mode
-                const lookTarget = new THREE.Vector3().copy(playerPos);
-                lookTarget.y += 2.0; 
-                camera.lookAt(lookTarget);
-                
-                State.localPlayer.mesh.visible = true;
-            }
-        }
-
-
-        // --- MAIN ENGINE LOOP ---
-        function startGameLoop() {
-            new WorldBuilder();
-            requestAnimationFrame(engineTick);
-        }
-
-        function engineTick() {
-            requestAnimationFrame(engineTick);
-
-            if (!State.active) return;
-
-            const delta = Math.min(State.clock.getDelta(), 0.1);
-
-            // Update Entities
-            State.actors.forEach(actor => actor.update(delta));
-
-            // Bot Spawner
-            State.spawnTimer += delta;
-            let botCount = 0;
-            State.actors.forEach(a => { if(a instanceof BotAI) botCount++; });
-            
-            if (State.spawnTimer >= CONFIG.SPAWN_RATE && botCount < CONFIG.MAX_BOTS) {
-                State.spawnTimer = 0;
-                const newBot = new BotAI(`BOT_${Date.now()}`);
-                
-                let angle = Math.random() * Math.PI*2;
-                let r = 60 + Math.random()*80;
-                let sx = State.localPlayer.mesh.position.x + Math.cos(angle)*r;
-                let sz = State.localPlayer.mesh.position.z + Math.sin(angle)*r;
-                
-                const max = CONFIG.WORLD_SIZE/2 - 10;
-                newBot.mesh.position.set(
-                    THREE.MathUtils.clamp(sx, -max, max), 
-                    15, // Drop from sky
-                    THREE.MathUtils.clamp(sz, -max, max)
+                const vectorHeadingToClient = new THREE.Vector3().subVectors(
+                    this.context.player.coords,
+                    this.meshContainerGroup.position
                 );
-                State.actors.set(newBot.id, newBot);
+                
+                // Apply spatial dispersion variance so that client strafe maneuvers function as design-intended counterplay
+                vectorHeadingToClient.x += (Math.random() - 0.5) * 4.0;
+                vectorHeadingToClient.z += (Math.random() - 0.5) * 4.0;
+                vectorHeadingToClient.normalize();
+
+                const outputBarrelPosition = this.meshContainerGroup.position.clone().add(new THREE.Vector3(0, 2.4, 0));
+                
+                const configurationRules = {
+                    velocity: 22, // Slow physical speed matrix allowing visual reading and positioning counters
+                    damage: 12,
+                    hue: 0xef4444 // Intense red sphere identifier tracking bullet alerts
+                };
+
+                const projectileObj = new PhysicalDodgeableProjectile(
+                    outputBarrelPosition, vectorHeadingToClient, configurationRules, false, this.context
+                );
+                this.context.projectilesList.push(projectileObj);
             }
 
-            // Sync, VFX, and Render
-            Network.sync(delta);
-            VFX.updateSystems(delta);
-            processCameraRig();
-            renderer.render(scene, camera);
-        }
-
-        function triggerGameOver() {
-            State.active = false;
-            document.exitPointerLock();
-            
-            const p = document.getElementById('main-panel');
-            p.innerHTML = `
-                <h1 class="title-glitch" style="color: #ef4444;">ELIMINATED</h1>
-                <p class="subtitle">Squad Rank: #2</p>
-                <h2 style="color:var(--theme-primary); margin: 25px 0; font-size: 2rem;">Total Kills: ${State.localPlayer.kills}</h2>
-                <button class="btn-primary" onclick="location.reload()">RETURN TO LOBBY</button>
-            `;
-            
-            document.getElementById('lobby-overlay').style.display = 'flex';
-            gsap.fromTo(p, {scale: 0.5, opacity: 0}, {scale: 1, opacity: 1, duration: 0.6, ease: "back.out(1.5)"});
-        }
-
-        // --- MENU LOGIC ---
-        window.onload = () => {
-            gsap.to('.main-panel', { opacity: 1, scale: 1, duration: 0.8, ease: "power3.out" });
-
-            document.getElementById('btn-copy-link').addEventListener('click', () => {
-                navigator.clipboard.writeText(CONFIG.RENDER_URL).then(() => {
-                    const toast = document.getElementById('link-toast');
-                    toast.style.display = 'block';
-                    setTimeout(() => { toast.style.display = 'none'; }, 2500);
-                });
-            });
-
-            document.getElementById('btn-deploy').addEventListener('click', () => {
-                const name = document.getElementById('player-name').value || "Guest";
-                State.roomCode = document.getElementById('room-code').value.toUpperCase();
-
-                State.localPlayer = new PlayerActor('LOCAL_PLAYER', name);
+            inflictStructuralDamage(damageVolume) {
+                this.currentHealth -= damageVolume;
                 
-                // Equip random legendary to showcase mechanics
-                const legs = [WEAPON_TIERS.LEGENDARY_ELECTRO, WEAPON_TIERS.LEGENDARY_INFERNO, WEAPON_TIERS.LEGENDARY_DELUGE, WEAPON_TIERS.LEGENDARY_GLACIER, WEAPON_TIERS.LEGENDARY_SPEED];
-                State.localPlayer.equipWeapon(legs[Math.floor(Math.random() * legs.length)]);
-                State.actors.set('LOCAL_PLAYER', State.localPlayer);
+                const targetMeshMaterial = this.meshContainerGroup.children[0].material;
+                const baselineHexColorCache = targetMeshMaterial.color.getHex();
                 
-                Network.connect(State.roomCode, name);
+                // Inject instant high-contrast structural damage registration flashes
+                targetMeshMaterial.color.setHex(0xffffff);
+                setTimeout(() => {
+                    if (this.currentHealth > 0) targetMeshMaterial.color.setHex(baselineHexColorCache);
+                }, 70);
 
-                updateHUD();
-                updateLeaderboard();
+                if (this.currentHealth <= 0) {
+                    this.executeDespawnDisintegration();
+                }
+            }
 
-                gsap.to('#lobby-overlay', { 
-                    opacity: 0, 
-                    duration: 0.5, 
+            executeDespawnDisintegration() {
+                gsap.to(this.meshContainerGroup.scale, {
+                    x: 0, y: 0, z: 0,
+                    duration: 0.35,
                     onComplete: () => {
-                        document.getElementById('lobby-overlay').style.display = 'none';
-                        State.active = true;
-                        State.clock.start();
-                        startGameLoop();
-                    } 
+                        this.context.scene.remove(this.meshContainerGroup);
+                        this.context.opponentsList = this.context.opponentsList.filter(instance => instance !== this);
+                        this.context.pushSystemChatLog(`🎯 BOUNTY RECORDED: Opponent target [${this.botId}] has been neutralized.`);
+                    }
                 });
-            });
+            }
+        }
+
+        // --- REMOTE PEER DATA PROXY REPRESENTATION CONTAINER ---
+        class RemotePeerNetworkProxy {
+            constructor(peerSocketId, analyticalCallsign, coreContext) {
+                this.context = coreContext;
+                this.networkId = peerSocketId;
+                this.playerName = analyticalCallsign;
+
+                // Track buffer coordinates for smooth network positioning transitions
+                this.bufferedPosition = new THREE.Vector3(0, 0, 0);
+                this.bufferedRotationYaw = 0;
+
+                this.buildVisualProxyMeshNodes();
+            }
+
+            buildVisualProxyMeshNodes() {
+                this.proxyGroup = new THREE.Group();
+                
+                const proxyChassis = new THREE.Mesh(
+                    new THREE.BoxGeometry(2, 3.4, 2),
+                    new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.4 }) // Distinct blue team identification hue
+                );
+                proxyChassis.position.y = 1.7;
+                this.proxyGroup.add(proxyChassis);
+
+                const proxyGazeVisor = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.5, 0.3, 0.4),
+                    new THREE.MeshBasicMaterial({ color: 0x22c55e })
+                );
+                proxyGazeVisor.position.set(0, 2.6, 1.02);
+                this.proxyGroup.add(proxyGazeVisor);
+
+                this.context.scene.add(this.proxyGroup);
+            }
+
+            bufferTargetNetworkPacket(packetSnapshot) {
+                if (packetSnapshot.coords) {
+                    this.bufferedPosition.set(packetSnapshot.coords.x, packetSnapshot.coords.y, packetSnapshot.coords.z);
+                }
+                if (packetSnapshot.yaw !== undefined) {
+                    this.bufferedRotationYaw = packetSnapshot.yaw;
+                }
+            }
+
+            renderFrameInterpolation(deltaSeconds) {
+                // Apply linear interpolation filtering to prevent packet stepping jitter anomalies
+                this.proxyGroup.position.lerp(this.bufferedPosition, 0.25);
+                
+                // Handle smooth angular orientation matching network states
+                const varianceDifference = this.bufferedRotationYaw - this.proxyGroup.rotation.y;
+                this.proxyGroup.rotation.y += varianceDifference * 0.25;
+            }
+
+            destroyVisualMeshObjects() {
+                this.context.scene.remove(this.proxyGroup);
+            }
+        }
+
+        // --- SYSTEM ENGINE HARDWARE BOOTSTRAP EXECUTOR ---
+        const CoreSimulationEngineInstance = new CentralSimulationEngine();
+        window.onload = () => {
+            CoreSimulationEngineInstance.initializeSimulationSpace();
         };
     </script>
 </body>
