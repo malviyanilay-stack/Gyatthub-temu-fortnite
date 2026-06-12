@@ -3,268 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TEMU FORTNITE: ULTIMATE NETWORKING EDITION</title>
+    <title>TEMU FORTNITE: BATTLE ROYALE</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
     <style>
-        /* ========================================================================
-           COMPREHENSIVE DESIGN ARCHITECTURE & RESPONSIVE GAME UI
-           ======================================================================== */
         :root {
-            --emerald-forest: #0a2f1d;
-            --neon-matrix: #22c55e;
-            --mana-purple: #a855f7;
-            --shield-blue: #3b82f6;
-            --health-red: #ef4444;
-            --panel-blur-bg: rgba(6, 20, 10, 0.92);
-            --rarity-common: #cbd5e1;
-            --rarity-rare: #3b82f6;
-            --rarity-legendary: #fbbf24;
+            --ui-blue-bright: #38bdf8;
+            --ui-border: #334155;
+            --health-color: #22c55e;  /* Fortnite Green HP */
+            --shield-color: #3b82f6;  /* Fortnite Blue Shield */
+            --mana-color: #a855f7;    /* Resource/Mana Pool */
+            --font-stack: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
-        * {
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-            margin: 0;
-            padding: 0;
-            font-family: 'Courier New', Courier, monospace;
-        }
+        * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; font-family: var(--font-stack); }
+        body, html { width: 100%; height: 100%; overflow: hidden; background-color: #87CEEB; touch-action: none; }
+        #canvas-viewport { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
 
-        body, html {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #020a04;
-            touch-action: none;
-        }
-
-        #canvas-viewport {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            left: 0; top: 0;
-            z-index: 1;
-        }
-
-        /* Deployment Control Screen */
+        /* ==================== LOBBY ==================== */
         #deployment-lobby {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #0f3d1e, #020803);
-            z-index: 500;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #f8fafc;
-        }
-
-        .lobby-panel {
-            background: var(--panel-blur-bg);
-            border: 3px solid var(--neon-matrix);
-            border-radius: 12px;
-            padding: 40px;
-            width: 92%;
-            max-width: 650px;
-            text-align: center;
-            box-shadow: 0 0 50px rgba(34, 197, 94, 0.3);
-        }
-
-        .main-title {
-            font-size: 3.2rem;
-            color: var(--neon-matrix);
-            text-transform: uppercase;
-            font-weight: 900;
-            letter-spacing: 4px;
-            margin-bottom: 5px;
-            text-shadow: 3px 3px 0px #000;
-        }
-
-        .subtitle {
-            color: #86efac;
-            font-size: 0.95rem;
-            margin-bottom: 25px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-
-        .input-label {
-            display: block;
-            font-size: 0.8rem;
-            color: #4ade80;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-
-        .ui-input {
-            width: 100%; padding: 14px;
-            border-radius: 6px; border: 2px solid #16a34a;
-            background: #020a02; color: #fff;
-            font-size: 1.1rem; text-align: center;
-            outline: none;
-        }
-
-        .tier-select-container {
-            display: flex; gap: 10px; margin: 15px 0;
-        }
-
-        .tier-tab {
-            flex: 1; padding: 12px; background: rgba(255,255,255,0.05);
-            border: 2px solid #15803d; border-radius: 6px; color: #fff;
-            cursor: pointer; font-weight: bold; font-size: 0.85rem; text-transform: uppercase;
-        }
-
-        .tier-tab.active[data-tier="common"] { border-color: var(--rarity-common); color: var(--rarity-common); background: rgba(203, 213, 225, 0.1); }
-        .tier-tab.active[data-tier="rare"] { border-color: var(--rarity-rare); color: var(--rarity-rare); background: rgba(59, 130, 246, 0.1); }
-        .tier-tab.active[data-tier="legendary"] { border-color: var(--rarity-legendary); color: var(--rarity-legendary); background: rgba(251, 191, 36, 0.1); }
-
-        .btn-deploy {
-            width: 100%; padding: 18px;
-            background: linear-gradient(135deg, #22c55e, #15803d);
-            color: white; border: none; border-radius: 6px;
-            font-weight: bold; font-size: 1.4rem;
-            cursor: pointer; margin-top: 15px;
-            box-shadow: 0 5px 0 #14532d;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn-deploy:active {
-            transform: translateY(4px);
-            box-shadow: 0 1px 0 #14532d;
-        }
-
-        /* Dynamic HUD Architecture */
-        .game-hud-layer {
-            position: absolute; left: 0; top: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 10;
-            display: flex; flex-direction: column;
-            justify-content: space-between; padding: 25px;
-        }
-
-        .hud-interactive { pointer-events: auto; }
-
-        .hud-header { display: flex; justify-content: space-between; width: 100%; }
-
-        /* Semantic Chat Architecture */
-        #chat-container {
-            width: 360px;
-            height: 260px;
-            background: rgba(4, 15, 6, 0.88);
-            border: 2px solid #16a34a;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
-        }
-
-        #chat-output-pool {
-            flex-grow: 1;
-            overflow-y: auto;
-            color: #f1f5f9;
-            font-size: 0.85rem;
-            margin-bottom: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .chat-row { background: rgba(0,0,0,0.25); padding: 5px 8px; border-radius: 4px; border-left: 3px solid #22c55e; }
-        .chat-row.sys { border-left-color: #eab308; color: #facc15; font-weight: bold; }
-        .chat-row.err { border-left-color: #ef4444; color: #f87171; font-weight: bold; }
-
-        #chat-input-node {
-            width: 100%; padding: 10px;
-            background: #000; border: 1px solid #22c55e;
-            color: #fff; border-radius: 4px; font-size: 0.85rem;
-            outline: none;
-        }
-
-        /* Modular Status Dash */
-        .vitals-dashboard {
-            background: var(--panel-blur-bg); padding: 20px;
-            border-radius: 8px; border-left: 5px solid var(--neon-matrix);
-            color: white; width: 260px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
-        }
-
-        .vital-title { font-size: 0.75rem; margin-top: 6px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; }
-        .vital-title.hp-lbl { color: var(--health-red); }
-        .vital-title.sh-lbl { color: var(--shield-blue); }
-        .vital-title.mn-lbl { color: var(--mana-purple); }
-
-        .progress-bar-track { width: 100%; height: 14px; background: #1e293b; border-radius: 4px; margin: 4px 0; overflow: hidden; border: 1px solid #334155; }
-        .fill-node-hp { width: 100%; height: 100%; background: linear-gradient(90deg, #dc2626, #ef4444); transition: width 0.15s; }
-        .fill-node-sh { width: 100%; height: 100%; background: linear-gradient(90deg, #2563eb, #3b82f6); transition: width 0.15s; }
-        .fill-node-mn { width: 50%; height: 100%; background: linear-gradient(90deg, #7c3aed, #a855f7); transition: width 0.15s; } /* Tracking max 200% */
-
-        .loadout-indicator { font-size: 0.8rem; color: #fbbf24; margin-top: 8px; border-top: 1px solid #14532d; padding-top: 6px; font-weight: bold; }
-
-        /* Trackpad Boundary Modules */
-        #trackpad-move-boundary { position: absolute; left: 0; bottom: 0; width: 45%; height: 65%; }
-        #trackpad-look-boundary { position: absolute; right: 0; bottom: 0; width: 55%; height: 80%; }
-
-        /* Grid Action Triggers */
-        .action-button-matrix {
-            position: absolute; right: 30px; bottom: 30px;
-            display: flex; flex-direction: column; gap: 14px;
-            align-items: flex-end;
-        }
-
-        .horizontal-subgroup { display: flex; gap: 12px; }
-
-        .action-circle-node {
-            width: 76px; height: 76px; border-radius: 50%;
-            background: rgba(8, 28, 12, 0.9); border: 2px solid rgba(34, 197, 94, 0.4);
-            color: white; font-weight: bold; font-size: 0.8rem;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.7);
-            text-shadow: 1px 1px 2px #000;
-        }
-
-        .action-circle-node:active { transform: scale(0.9); border-color: var(--neon-matrix); }
-        #node-trigger-fire { width: 100px; height: 100px; background: #991b1b; border-color: #ef4444; font-size: 1.1rem; }
-        #node-trigger-move { background: #1e3a8a; border-color: #3b82f6; }
-
-        /* Reticle Centering */
-        #game-reticle {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 24px; height: 24px; pointer-events: none;
-        }
-        .reticle-hair { position: absolute; background: #fff; box-shadow: 0 0 3px #000; }
-        .hair-w { top: 11px; left: 0; width: 24px; height: 2px; }
-        .hair-h { top: 0; left: 11px; width: 2px; height: 24px; }
-        .hair-center { top: 10px; left: 10px; width: 4px; height: 4px; background: #22c55e; border-radius: 50%; }
-
-        /* Elimination System Canvas Frame */
-        .termination-screen-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(4, 12, 5, 0.96); z-index: 1000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            color: white; display: none;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9));
+            backdrop-filter: blur(12px); z-index: 500; display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
+        .lobby-panel {
+            background: rgba(15, 23, 42, 0.95); border: 2px solid var(--ui-blue-bright); border-radius: 12px;
+            padding: 50px; width: 90%; max-width: 550px; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+        }
+        .main-title { font-size: 3.5rem; color: #ffffff; font-weight: 900; margin-bottom: 25px; text-transform: uppercase; text-shadow: 3px 3px 0px #000; }
+        .ui-label { display: block; color: #94a3b8; text-align: left; font-size: 0.9rem; font-weight: bold; text-transform: uppercase; margin-bottom: 6px; }
+        .ui-input { width: 100%; padding: 14px; margin-bottom: 25px; border-radius: 6px; border: 1px solid var(--ui-border); background: #1e293b; color: #ffffff; font-size: 1.2rem; text-align: center; outline: none; }
+        .btn-deploy { width: 100%; padding: 18px; background: linear-gradient(180deg, #38bdf8, #0284c7); color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 1.4rem; cursor: pointer; text-transform: uppercase; }
 
-        /* Virtual Trackpad Node */
-        #virtual-joystick-housing {
-            position: absolute; width: 100px; height: 100px;
-            background: rgba(255,255,255,0.06); border: 3px solid rgba(34, 197, 94, 0.3);
-            border-radius: 50%; display: none; pointer-events: none; z-index: 100;
-            transform: translate(-50%, -50%);
+        /* ==================== HUD & CHAT ==================== */
+        .game-hud-layer { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; display: flex; flex-direction: column; justify-content: space-between; padding: 25px; }
+        .hud-interactive { pointer-events: auto; }
+        
+        #chat-terminal {
+            width: 450px; height: 320px; background: rgba(15, 23, 42, 0.85); border: 2px solid var(--ui-blue-bright);
+            border-radius: 8px; display: flex; flex-direction: column; padding: 12px;
         }
-        #virtual-joystick-puck {
-            position: absolute; top: 28px; left: 28px; width: 44px; height: 44px;
-            background: rgba(255, 255, 255, 0.85); border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
+        .chat-header { color: var(--ui-blue-bright); font-weight: 800; font-size: 0.9rem; margin-bottom: 8px; border-bottom: 2px solid var(--ui-border); padding-bottom: 6px; }
+        #chat-output { flex-grow: 1; overflow-y: auto; color: #f8fafc; font-size: 0.9rem; display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .msg { padding: 6px 10px; background: rgba(30, 41, 59, 0.7); border-left: 3px solid #64748b; border-radius: 4px; }
+        #chat-input { width: 100%; padding: 10px; background: #0f172a; color: #ffffff; border: 1px solid var(--ui-border); border-radius: 4px; outline: none; }
+
+        /* DASHBOARD - HP, SHIELD, MANA */
+        .vitals-dashboard { background: rgba(15, 23, 42, 0.9); padding: 20px; border-radius: 8px; width: 320px; border-top: 4px solid var(--ui-blue-bright); align-self: flex-start; }
+        .vital-label { color: #cbd5e1; font-size: 0.8rem; font-weight: 800; margin-top: 10px; text-transform: uppercase; }
+        .bar-track { width: 100%; height: 18px; background: #020617; border-radius: 9px; overflow: hidden; margin-top: 4px; border: 1px solid var(--ui-border); }
+        
+        .fill-hp { height: 100%; background: var(--health-color); width: 100%; transition: width 0.15s ease-out; }
+        .fill-sh { height: 100%; background: var(--shield-color); width: 0%; transition: width 0.15s ease-out; }
+        .fill-mn { height: 100%; background: var(--mana-color); width: 100%; transition: width 0.15s ease-out; }
+
+        #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px; }
+        #crosshair::before, #crosshair::after { content: ''; position: absolute; background: white; box-shadow: 0 0 3px rgba(0,0,0,0.8); }
+        #crosshair::before { top: 4px; left: -5px; width: 20px; height: 2px; }
+        #crosshair::after { top: -5px; left: 4px; width: 2px; height: 20px; }
+
+        /* CONTROLS */
+        #trackpad-move { position: absolute; left: 0; bottom: 0; width: 45%; height: 55%; }
+        #trackpad-look { position: absolute; right: 0; bottom: 0; width: 45%; height: 55%; }
+        
+        .action-btn { position: absolute; width: 85px; height: 85px; border-radius: 50%; background: rgba(15, 23, 42, 0.7); border: 3px solid #64748b; color: white; font-weight: 900; display: flex; justify-content: center; align-items: center; }
+        #btn-fire { right: 35px; bottom: 35px; background: rgba(239, 68, 68, 0.5); }
+        #btn-jump { right: 135px; bottom: 35px; background: rgba(56, 189, 248, 0.5); }
+        #btn-ability { right: 85px; bottom: 135px; background: rgba(168, 85, 247, 0.5); }
     </style>
 </head>
 <body>
@@ -274,1336 +82,160 @@
     <div id="deployment-lobby" class="hud-interactive">
         <div class="lobby-panel">
             <h1 class="main-title">Temu Fortnite</h1>
-            <div class="subtitle">Multiplayer Sync & Semantic AI Engine</div>
+            <label class="ui-label">Player Username</label>
+            <input type="text" id="input-username" class="ui-input" value="Sweat_Builder">
             
-            <div class="input-group">
-                <label class="input-label">Operational Callsign</label>
-                <input type="text" id="node-player-identity" class="ui-input" value="SurvivorPlayer">
-            </div>
-
-            <div class="input-group">
-                <label class="input-label">Select Tier Specialization</label>
-                <div class="tier-select-container">
-                    <button class="tier-tab active" data-tier="common">Common</button>
-                    <button class="tier-tab" data-tier="rare">Rare</button>
-                    <button class="tier-tab" data-tier="legendary">Legendary</button>
-                </div>
-            </div>
+            <label class="ui-label">Fortnite Loadout</label>
+            <select id="input-loadout" class="ui-input">
+                <option value="wall">Build: Wood Wall (Cost: 50 Mana)</option>
+                <option value="shield">Consumable: Mini Shield (+25 Shield)</option>
+                <option value="shotgun">Weapon: Tactical Shotgun (Spread Shot)</option>
+            </select>
             
-            <button class="btn-deploy" id="btn-execute-deployment">Deploy Network Link</button>
+            <button class="btn-deploy" id="btn-start">Drop From Bus</button>
         </div>
     </div>
 
-    <div class="game-hud-layer">
-        <div class="hud-header">
-            <div id="chat-container" class="hud-interactive">
-                <div id="chat-output-pool">
-                    <div class="chat-row sys">AI_MODERATOR: Intent processing engine fully initialized. Monitoring for PII, Slurs, and Relationship Solicitation.</div>
-                </div>
-                <input type="text" id="chat-input-node" placeholder="Type message... (Press Enter)">
+    <div class="game-hud-layer" id="game-ui" style="display: none;">
+        <div style="display: flex; justify-content: space-between; width: 100%; pointer-events: none;">
+            <div id="chat-terminal" class="hud-interactive">
+                <div class="chat-header">Global Comms</div>
+                <div id="chat-output"></div>
+                <input type="text" id="chat-input" placeholder="Chat here...">
             </div>
 
             <div class="vitals-dashboard">
-                <div style="font-weight: 900; letter-spacing: 1px; color: #fff; font-size: 1.1rem;" id="badge-ui-identity">SURVIVOR</div>
+                <div id="hud-name" style="color: white; font-size: 1.3rem; font-weight: 900;"></div>
                 
-                <div class="vital-title hp-lbl">Integrity Pool</div>
-                <div class="progress-bar-track"><div class="fill-node-hp" id="bar-display-hp"></div></div>
+                <div class="vital-label">Health (HP)</div>
+                <div class="bar-track"><div class="fill-hp" id="bar-hp"></div></div>
                 
-                <div class="vital-title sh-lbl">Shield Matrix</div>
-                <div class="progress-bar-track"><div class="fill-node-sh" id="bar-display-sh"></div></div>
-                
-                <div class="vital-title mn-lbl">Mana Reserve (Max 200%)</div>
-                <div class="progress-bar-track"><div class="fill-node-mn" id="bar-display-mn"></div></div>
-                
-                <div class="loadout-indicator" id="badge-ui-weapon">WEAPON: PIECE PISTOL</div>
-                <div style="font-size:0.7rem; color:#a855f7; margin-top:2px;" id="badge-ui-tier">TIER: COMMON</div>
+                <div class="vital-label">Shield (AP)</div>
+                <div class="bar-track"><div class="fill-sh" id="bar-sh"></div></div>
+
+                <div class="vital-label">Mana / Mats (Max 200%)</div>
+                <div class="bar-track"><div class="fill-mn" id="bar-mana"></div></div>
             </div>
         </div>
 
-        <div id="game-reticle">
-            <div class="reticle-hair hair-w"></div>
-            <div class="reticle-hair hair-h"></div>
-            <div class="reticle-hair hair-center"></div>
-        </div>
-
-        <div id="trackpad-move-boundary" class="hud-interactive"></div>
-        <div id="trackpad-look-boundary" class="hud-interactive"></div>
-
-        <div class="action-button-matrix hud-interactive">
-            <div class="horizontal-subgroup">
-                <button class="action-circle-node" id="node-trigger-medkit">MEDKIT<br>(1)</button>
-                <button class="action-circle-node" id="node-trigger-swap">SWAP<br>GUN</button>
-            </div>
-            <div class="horizontal-subgroup">
-                <button class="action-circle-node" id="node-trigger-move">MOVE<br>SKILL</button>
-                <button class="action-circle-node" id="node-trigger-jump">JUMP</button>
-                <button class="action-circle-node" id="node-trigger-fire">FIRE</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="termination-modal" class="termination-screen-overlay hud-interactive">
-        <h1 style="font-size: 4.5rem; color: var(--health-red); text-shadow: 3px 3px 0px #000; font-weight: 900; margin-bottom: 10px; letter-spacing: 2px;">CONNECTION LOST</h1>
-        <p style="color: #cbd5e1; font-size: 1.3rem; margin-bottom: 35px; letter-spacing: 1px;">Your structural framework collapsed on the battlefield.</p>
-        <div style="display: flex; gap: 20px; width: 85%; max-width: 420px;">
-            <button class="btn-deploy" style="background: #dc2626; box-shadow: 0 5px 0 #7f1d1d;" id="btn-action-respawn">Respawn</button>
-            <button class="btn-deploy" style="background: #475569; box-shadow: 0 5px 0 #1e293b;" id="btn-action-leave">Leave Game</button>
-        </div>
-    </div>
-
-    <div id="virtual-joystick-housing">
-        <div id="virtual-joystick-puck"></div>
+        <div id="crosshair"></div>
+        <div id="trackpad-move" class="hud-interactive"></div>
+        <div id="trackpad-look" class="hud-interactive"></div>
+        
+        <div id="btn-fire" class="action-btn hud-interactive">AR</div>
+        <div id="btn-jump" class="action-btn hud-interactive">JUMP</div>
+        <div id="btn-ability" class="action-btn hud-interactive">SKILL</div>
     </div>
 
     <script>
-        /**
-         * ==================================================================================
-         * TEMU FORTNITE CORE ARCHITECTURE ENGINE
-         * ARCHITECTURAL DESIGN COMPLETE SYSTEM v4.0
-         * ==================================================================================
-         */
+        const VENDOR_SERVER_LINK = "https://temu-fortnight.onrender.com/";
 
-        // --- HEURISTIC PATTERN EVALUATION AI CHAT MODERATOR ---
-        class IntelligentSemanticAIModerator {
-            constructor() {
-                // Tracking parameters identifying algorithmic variations of personal identifiers
-                this.piiSignatures = [
-                    /\b\d{3,4}[-.\s]?\d{3,4}[-.\s]?\d.{3,4}\b/, // Structural variations of numeric phone layouts
-                    /\b\d{1,5}\s[A-Za-z0-9\s.]{3,}\s(St|Street|Ave|Avenue|Rd|Road|Blvd|Drive|Way|Lane)\b/i, // Spatial location identifiers
-                    /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/, // Email parameters
-                    /\b(snap|snapchat|insta|instagram|discord|dc|roblox|tiktok|add\s?me|my\s?user|username\s?is|phone\s?num|number\s?is|add\s?my)\b/i // External routing mechanics
-                ];
-
-                // Relationship Manipulation and E-Dating Context Patterns
-                this.relationshipProfiles = [
-                    /\b(gf|bf|boyfriend|girlfriend|wifey|hubby|date|dating|single|taken|marry\s?me|u\s?single|wanna\s?date|looking\s?for\s?gf|looking\s?for\s?bf|be\s?my\s?gf|be\s?my\s?bf)\b/i,
-                    /\b(boy\s?friend|girl\s?friend|e-date|edate|online\s?relationship|kiss\s?me|hug\s?me|babe|baby|sweetheart|cutie|freaky|sexy|hot|smash|hawt|roleplay|rp)\b/i
-                ];
-
-                // Severe Prohibited Expressions Framework
-                this.hostileSignatures = [
-                    /\b(slur[0-9]|cuss[0-9]|toxicphrase|explictword)\b/i
-                ];
-            }
-
-            /**
-             * Processes natural text payload to isolate semantic intentions
-             * @param {string} payload 
-             * @returns {Object} { clean: boolean, errorDescription: string|null }
-             */
-            verifyPayloadSafety(payload) {
-                const standardizedPayload = payload.trim().toLowerCase();
-
-                // 1. Scan Personal Data Leak Footprints
-                for (let pattern of this.piiSignatures) {
-                    if (pattern.test(standardizedPayload)) {
-                        return { clean: false, errorDescription: "Security Exception: Data transmission blocked. Distribution of sensitive personal routing paths or PII is prohibited." };
-                    }
-                }
-
-                // 2. Process Interaction Intercepts targeting E-Dating Patterns
-                let riskScore = 0;
-                for (let pattern of this.relationshipProfiles) {
-                    if (pattern.test(standardizedPayload)) {
-                        riskScore += 2;
-                    }
-                }
-
-                // Correlate interrogative phrasing targeting extraction loops
-                if (/\b(are\s?you|u\s?have|wanna|looking\s?for|do\s?you|can\s?i|give\s?me)\b/i.test(standardizedPayload) && riskScore >= 2) {
-                    return { clean: false, errorDescription: "Safety Exception: Intent engine flag raised. Phrasing matches conversational parameters associated with unauthorized relationship solicitation or e-dating." };
-                }
-
-                if (riskScore >= 4) {
-                    return { clean: false, errorDescription: "Safety Exception: Text rejected. Language patterns conflict with safety policies." };
-                }
-
-                // 3. Scan Absolute Hostility Matrix Arrays
-                for (let pattern of this.hostileSignatures) {
-                    if (pattern.test(standardizedPayload)) {
-                        return { clean: false, errorDescription: "Safety Exception: Packet dropped due to explicit or hostile content violations." };
-                    }
-                }
-
-                return { clean: true, errorDescription: null };
-            }
-        }
-
-        // --- RUNTIME CONFIGURATION PARAMETERS ---
-        const EngineConfig = {
-            World: {
-                Size: 500,
-                GroundColor: 0x0f2a14, // Rich stylized dark green shade
-                SkyColor: 0x091c0e,
-                DensityGrass: 600
-            },
-            Vitals: {
-                MaxHP: 100,
-                MaxShield: 100,
-                MaxMana: 200, // Maximum analytical specification 200%
-                SpeedBase: 15,
-                RegenRate: 4,
-                RegenTickPeriod: 1000,
-                RegenCooldownTime: 5000
-            },
-            Weapons: {
-                PISTOL: { name: "Piece Pistol", velocity: 40, damage: 10, interval: 500, diameter: 0.25, hue: 0xffffff },
-                RIFLE: { name: "Ranger Rifle", velocity: 90, damage: 25, interval: 200, diameter: 0.15, hue: 0xfacc15 }
-            }
+        const CONFIG = {
+            world: { skyColor: 0x87CEEB, groundColor: 0x55a630 },
+            player: { speed: 20, jump: 16, maxHp: 100, maxShield: 100, maxMana: 200 } // Mana max rigidly set to 200%
         };
 
-        // --- CENTRAL SYSTEMS RUNTIME ARCHITECTURE ---
-        class CentralSimulationEngine {
-            constructor() {
-                this.scene = null;
-                this.camera = null;
-                this.renderer = null;
-                this.socket = null;
-                
-                // System Registry Collections
-                this.projectilesList = [];
-                this.opponentsList = [];
-                this.networkPeersMap = new Map(); // Real-time storage for remote players
-                
-                // Component Instantiations
-                this.moderator = new IntelligentSemanticAIModerator();
-                this.player = new LocalPlayerController(this);
-                this.inputs = new DecoupledDeviceInputSystem(this);
-                
-                this.activeState = false;
-                this.previousFrameTime = 0;
-                this.selectedCombatTier = "common";
-            }
+        // --- PARTICLE ENGINE (For Shotgun Sparks & Building Dust) ---
+        class ParticleSystemController {
+            constructor(scene) {
+                this.scene = scene;
+                this.pool = 1000;
+                this.posArray = new Float32Array(this.pool * 3);
+                this.vels = [];
+                this.lives = [];
 
-            initializeSimulationSpace() {
-                const targetViewport = document.getElementById('canvas-viewport');
-                
-                this.scene = new THREE.Scene();
-                this.scene.background = new THREE.Color(EngineConfig.World.SkyColor);
-                this.scene.fog = new THREE.FogExp2(EngineConfig.World.SkyColor, 0.018);
-
-                this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-                
-                this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-                this.renderer.setSize(window.innerWidth, window.innerHeight);
-                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-                this.renderer.shadowMap.enabled = true;
-                targetViewport.appendChild(this.renderer.domElement);
-
-                // Setup Environmental Illuminations
-                const ambientSystemLight = new THREE.AmbientLight(0x1e3d24, 1.4);
-                this.scene.add(ambientSystemLight);
-
-                const directionalSunLight = new THREE.DirectionalLight(0x22c55e, 0.7);
-                directionalSunLight.position.set(80, 120, 40);
-                this.scene.add(directionalSunLight);
-
-                this.generateTerrainSurface();
-                this.spawnEnvironmentOpponents();
-                this.establishNetworkPipeline();
-
-                window.addEventListener('resize', () => this.handleResizeEvent(), false);
-            }
-
-            generateTerrainSurface() {
-                const landscapeGeometry = new THREE.PlaneGeometry(EngineConfig.World.Size, EngineConfig.World.Size, 24, 24);
-                
-                // Apply spatial transformation waves to build elevation variance
-                const positionPositions = landscapeGeometry.attributes.position;
-                for (let i = 0; i < positionPositions.count; i++) {
-                    const currentX = positionPositions.getX(i);
-                    const currentY = positionPositions.getY(i);
-                    const calculatedZ = Math.sin(currentX * 0.03) * Math.cos(currentY * 0.03) * 3.0;
-                    positionPositions.setZ(i, calculatedZ);
-                }
-                landscapeGeometry.computeVertexNormals();
-
-                const landscapeMaterial = new THREE.MeshStandardMaterial({
-                    color: EngineConfig.World.GroundColor,
-                    roughness: 0.9,
-                    metalness: 0.02
-                });
-
-                this.terrainMesh = new THREE.Mesh(landscapeGeometry, landscapeMaterial);
-                this.terrainMesh.rotation.x = -Math.PI / 2;
-                this.terrainMesh.receiveShadow = true;
-                this.scene.add(this.terrainMesh);
-
-                this.compileAccurateSurfaceGrass();
-            }
-
-            /**
-             * Resolves precision height intersections directly from the landscape surface profile
-             * Completely resolves the floating terrain assets bug.
-             */
-            resolveHeightAtCoordinate(posX, posZ) {
-                if (!this.terrainMesh) return 0;
-                const downRaycast = new THREE.Raycaster(
-                    new THREE.Vector3(posX, 120, posZ),
-                    new THREE.Vector3(0, -1, 0)
-                );
-                const intersectionPoints = downRaycast.intersectObject(this.terrainMesh);
-                if (intersectionPoints.length > 0) {
-                    return intersectionPoints[0].point.y;
-                }
-                return 0;
-            }
-
-            compileAccurateSurfaceGrass() {
-                const modelGeometry = new THREE.ConeGeometry(0.12, 1.6, 4);
-                const modelMaterial = new THREE.MeshLambertMaterial({ color: 0x14532d });
-
-                const instanceCluster = new THREE.InstancedMesh(modelGeometry, modelMaterial, EngineConfig.World.DensityGrass);
-                const configurationMatrix = new THREE.Matrix4();
-
-                for (let i = 0; i < EngineConfig.World.DensityGrass; i++) {
-                    const coordinateX = (Math.random() - 0.5) * (EngineConfig.World.Size * 0.85);
-                    const coordinateZ = (Math.random() - 0.5) * (EngineConfig.World.Size * 0.85);
-                    
-                    // Force vertical pinning mapping straight to the ground profile height
-                    const dynamicHeightY = this.resolveHeightAtCoordinate(coordinateX, coordinateZ);
-
-                    const spatialPosition = new THREE.Vector3(coordinateX, dynamicHeightY + 0.8, coordinateZ);
-                    const spatialRotation = new THREE.Euler(
-                        (Math.random() - 0.5) * 0.15,
-                        Math.random() * Math.PI,
-                        (Math.random() - 0.5) * 0.15
-                    );
-                    const spatialScale = new THREE.Vector3(1, 0.5 + Math.random() * 0.8, 1);
-
-                    const spatialQuaternion = new THREE.Quaternion().setFromEuler(spatialRotation);
-                    configurationMatrix.compose(spatialPosition, spatialQuaternion, spatialScale);
-                    instanceCluster.setMatrixAt(i, configurationMatrix);
+                for (let i = 0; i < this.pool; i++) {
+                    this.posArray[i * 3] = 0; this.posArray[i * 3 + 1] = -5000; this.posArray[i * 3 + 2] = 0;
+                    this.vels.push(new THREE.Vector3());
+                    this.lives.push(0);
                 }
 
-                instanceCluster.instanceMatrix.needsUpdate = true;
-                this.scene.add(instanceCluster);
+                const geo = new THREE.BufferGeometry();
+                geo.setAttribute('position', new THREE.BufferAttribute(this.posArray, 3));
+                this.mat = new THREE.PointsMaterial({ size: 0.4, color: 0xffddaa, transparent: true, opacity: 0.8 });
+                this.mesh = new THREE.Points(geo, this.mat);
+                this.scene.add(this.mesh);
             }
 
-            spawnEnvironmentOpponents() {
-                // Instantiates distinct individual computer bots (0 friendly team alliances)
-                const pointCoordinates = [
-                    new THREE.Vector3(40, 0, -50),
-                    new THREE.Vector3(-60, 0, -80),
-                    new THREE.Vector3(85, 0, 60),
-                    new THREE.Vector3(-35, 0, 45)
-                ];
-
-                pointCoordinates.forEach((coord, index) => {
-                    coord.y = this.resolveHeightAtCoordinate(coord.x, coord.z);
-                    const instanceBot = new ManagedAIEnemy(`Target_Drone_${index + 1}`, coord, this);
-                    this.opponentsList.push(instanceBot);
-                });
-            }
-
-            establishNetworkPipeline() {
-                // Connection Initialization Point leveraging your official Socket.io backend
-                try {
-                    this.socket = io("https://temu-fortnight.onrender.com/", {
-                        transports: ['websocket'],
-                        upgrade: false,
-                        autoConnect: false
-                    });
-
-                    // Define Network Listener Bindings
-                    this.socket.on("connect", () => {
-                        this.pushSystemChatLog("SERVER: Socket tunnel successfully established with deployment center.");
-                    });
-
-                    this.socket.on("peer_state_modification", (data) => {
-                        this.synchronizeRemoteNetworkPeers(data);
-                    });
-
-                    this.socket.on("peer_disconnect_broadcast", (peerId) => {
-                        this.purgeRemotePeerInstance(peerId);
-                    });
-
-                    this.socket.on("replicate_projectile_burst", (packet) => {
-                        this.spawnNetworkReplicatedBullet(packet);
-                    });
-                } catch(err) {
-                    console.error("Networking engine fault: Running deployment under offline context simulation fallback mode.", err);
-                }
-            }
-
-            executeDeploymentFlow() {
-                const targetTag = document.getElementById('node-player-identity').value;
-                document.getElementById('badge-ui-identity').innerText = targetTag.trim().toUpperCase();
-                document.getElementById('badge-ui-tier').innerText = `TIER: ${this.selectedCombatTier.toUpperCase()}`;
-                
-                document.getElementById('deployment-lobby').style.display = 'none';
-                this.activeState = true;
-                
-                this.player.reinitializeStateData();
-                this.inputs.bindPointerLockContext();
-
-                if (this.socket) {
-                    this.socket.connect();
-                    this.socket.emit("player_join_handshake", {
-                        callsign: targetTag,
-                        tier: this.selectedCombatTier
-                    });
-                }
-                
-                this.previousFrameTime = performance.now();
-                requestAnimationFrame((time) => this.simulationExecutionLoop(time));
-            }
-
-            simulationExecutionLoop(timestampHighRes) {
-                if (!this.activeState) return;
-                requestAnimationFrame((time) => this.simulationExecutionLoop(time));
-
-                let executionSliceSeconds = (timestampHighRes - this.previousFrameTime) / 1000;
-                if (executionSliceSeconds > 0.1) executionSliceSeconds = 0.1; // Clip massive rendering latency hiccups
-                this.previousFrameTime = timestampHighRes;
-
-                // 1. Process Core Kinematics Updates
-                this.player.evaluateFrameTransformation(executionSliceSeconds);
-                this.inputs.applyCameraDampingInterpolation();
-
-                // 2. Drive Projectile Transformation Sequences
-                for (let i = this.projectilesList.length - 1; i >= 0; i--) {
-                    const trackingBullet = this.projectilesList[i];
-                    trackingBullet.advanceProjectileFlightTime(executionSliceSeconds);
-                    if (trackingBullet.expiredStateFlag) {
-                        this.projectilesList.splice(i, 1);
+            burst(pos, count, color) {
+                this.mat.color.setHex(color);
+                let spawned = 0;
+                for (let i = 0; i < this.pool; i++) {
+                    if (this.lives[i] <= 0) {
+                        this.posArray[i*3] = pos.x; this.posArray[i*3+1] = pos.y; this.posArray[i*3+2] = pos.z;
+                        this.vels[i].set((Math.random()-0.5)*15, Math.random()*10+5, (Math.random()-0.5)*15);
+                        this.lives[i] = 0.5 + Math.random()*0.5;
+                        spawned++;
+                        if (spawned >= count) break;
                     }
                 }
-
-                // 3. Drive AI Enemy Matrix Execution States
-                this.opponentsList.forEach(bot => bot.processAIFrameExecution(executionSliceSeconds));
-
-                // 4. Update Network Peer Interpolation Projections
-                this.networkPeersMap.forEach(peerProxy => peerProxy.renderFrameInterpolation(executionSliceSeconds));
-
-                // 5. Pipe Current State Package Outward Across Network Tunnel
-                this.broadcastLocalTransformPacket();
-
-                // 6. Draw Viewport Frames
-                this.renderer.render(this.scene, this.camera);
+                this.mesh.geometry.attributes.position.needsUpdate = true;
             }
 
-            broadcastLocalTransformPacket() {
-                if (!this.socket || !this.socket.connected) return;
-                this.socket.emit("client_transform_broadcast", {
-                    coords: { x: this.player.coords.x, y: this.player.coords.y, z: this.player.coords.z },
-                    yaw: this.inputs.angleYaw,
-                    vitals: { hp: this.player.health, sh: this.player.shield, mn: this.player.mana }
-                });
-            }
-
-            synchronizeRemoteNetworkPeers(serverDataPacket) {
-                if (!this.activeState) return;
-                
-                // Iterate through packet collection keys to sync connected peers
-                Object.keys(serverDataPacket).forEach((peerId) => {
-                    if (peerId === this.socket.id) return; // Skip matching local instance data structures
-
-                    const snapshot = serverDataPacket[peerId];
-                    if (!this.networkPeersMap.has(peerId)) {
-                        const newProxy = new RemotePeerNetworkProxy(peerId, snapshot.callsign, this);
-                        this.networkPeersMap.set(peerId, newProxy);
-                        this.pushSystemChatLog(`SERVER: Active player network instance detected: ${snapshot.callsign}`);
+            update(delta) {
+                let active = false;
+                for (let i = 0; i < this.pool; i++) {
+                    if (this.lives[i] > 0) {
+                        active = true;
+                        this.lives[i] -= delta;
+                        this.vels[i].y -= 25 * delta;
+                        this.posArray[i*3] += this.vels[i].x * delta;
+                        this.posArray[i*3+1] += this.vels[i].y * delta;
+                        this.posArray[i*3+2] += this.vels[i].z * delta;
+                        if (this.lives[i] <= 0) this.posArray[i*3+1] = -5000;
                     }
-
-                    const activeProxy = this.networkPeersMap.get(peerId);
-                    activeProxy.bufferTargetNetworkPacket(snapshot);
-                });
-            }
-
-            purgeRemotePeerInstance(peerId) {
-                if (this.networkPeersMap.has(peerId)) {
-                    const activeProxy = this.networkPeersMap.get(peerId);
-                    activeProxy.destroyVisualMeshObjects();
-                    this.networkPeersMap.delete(peerId);
-                    this.pushSystemChatLog("SERVER: Remote operational client connection severed.");
                 }
+                if (active) this.mesh.geometry.attributes.position.needsUpdate = true;
+            }
+        }
+
+        // --- NON-ROBLOX MULTI-LIMB RIG ---
+        class HumanoidModelRig {
+            constructor(scene, hexColor) {
+                this.group = new THREE.Group();
+                this.scene = scene;
+                this.animTime = 0;
+
+                const matBody = new THREE.MeshStandardMaterial({ color: hexColor });
+                const matSkin = new THREE.MeshStandardMaterial({ color: 0xffe0bd });
+
+                this.torso = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.8, 0.8), matBody);
+                this.torso.position.y = 1.9;
+                this.group.add(this.torso);
+
+                this.head = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.85, 0.85), matSkin);
+                this.head.position.y = 1.35;
+                this.torso.add(this.head);
+
+                this.armL = new THREE.Group(); this.armL.position.set(-0.95, 0.7, 0);
+                const aL = new THREE.Mesh(new THREE.BoxGeometry(0.45, 1.5, 0.45), matSkin); aL.position.y = -0.65;
+                this.armL.add(aL); this.torso.add(this.armL);
+
+                this.armR = new THREE.Group(); this.armR.position.set(0.95, 0.7, 0);
+                const aR = new THREE.Mesh(new THREE.BoxGeometry(0.45, 1.5, 0.45), matSkin); aR.position.y = -0.65;
+                this.armR.add(aR); this.torso.add(this.armR);
+
+                this.legL = new THREE.Group(); this.legL.position.set(-0.4, -0.9, 0);
+                const lL = new THREE.Mesh(new THREE.BoxGeometry(0.55, 1.6, 0.55), matBody); lL.position.y = -0.8;
+                this.legL.add(lL); this.torso.add(this.legL);
+
+                this.legR = new THREE.Group(); this.legR.position.set(0.4, -0.9, 0);
+                const lR = new THREE.Mesh(new THREE.BoxGeometry(0.55, 1.6, 0.55), matBody); lR.position.y = -0.8;
+                this.legR.add(lR); this.torso.add(this.legR);
+
+                this.scene.add(this.group);
             }
 
-            spawnNetworkReplicatedBullet(bulletPacket) {
-                if (!this.activeState) return;
-                // Avoid capturing matching local instances echoed by the network architecture
-                if (bulletPacket.ownerId === this.socket.id) return;
-
-                const startOrigin = new THREE.Vector3(bulletPacket.origin.x, bulletPacket.origin.y, bulletPacket.origin.z);
-                const trajectoryDir = new THREE.Vector3(bulletPacket.direction.x, bulletPacket.direction.y, bulletPacket.direction.z);
-                
-                const bulletObj = new PhysicalDodgeableProjectile(
-                    startOrigin, trajectoryDir, bulletPacket.weaponProfile, false, this
-                );
-                this.projectilesList.push(bulletObj);
-            }
-
-            executeChatSubmissionFlow() {
-                const nodeInput = document.getElementById('chat-input-node');
-                const rawMessageString = nodeInput.value;
-                if (!rawMessageString.trim()) return;
-
-                const poolContainer = document.getElementById('chat-output-pool');
-                
-                // Run text input payloads through the semantic validation engine
-                const safetyReport = this.moderator.verifyPayloadSafety(rawMessageString);
-
-                if (safetyReport.clean) {
-                    const tag = this.player.callsign;
-                    
-                    // Output locally
-                    poolContainer.innerHTML += `<div class="chat-row"><strong>${tag}:</strong> ${rawMessageString.replace(/</g, "&lt;")}</div>`;
-                    
-                    // Transmit outward over data streams
-                    if (this.socket && this.socket.connected) {
-                        this.socket.emit("chat_packet_transmit", rawMessageString);
-                    }
+            animate(speed, delta) {
+                if (speed > 0.2) {
+                    this.animTime += delta * 15;
+                    const swing = Math.sin(this.animTime) * 0.8;
+                    this.armL.rotation.x = swing; this.armR.rotation.x = -swing;
+                    this.legL.rotation.x = -swing; this.legR.rotation.x = swing;
                 } else {
-                    poolContainer.innerHTML += `<div class="chat-row err">⚠️ ${safetyReport.errorDescription}</div>`;
+                    this.armL.rotation.x *= 0.8; this.armR.rotation.x *= 0.8;
+                    this.legL.rotation.x *= 0.8; this.legR.rotation.x *= 0.8;
                 }
-
-                nodeInput.value = '';
-                poolContainer.scrollTop = poolContainer.scrollHeight;
-            }
-
-            pushSystemChatLog(logString) {
-                const poolContainer = document.getElementById('chat-output-pool');
-                poolContainer.innerHTML += `<div class="chat-row sys">${logString}</div>`;
-                poolContainer.scrollTop = poolContainer.scrollHeight;
-            }
-
-            handleResizeEvent() {
-                this.camera.aspect = window.innerWidth / window.innerHeight;
-                this.camera.updateProjectionMatrix();
-                this.renderer.setSize(window.innerWidth, window.innerHeight);
             }
         }
-
-        // --- CAMERA INTERPOLATION & DECOUPLED DEVICE INPUT CONTROLLER ---
-        class DecoupledDeviceInputSystem {
-            constructor(coreContext) {
-                this.context = coreContext;
-                
-                // Key state map tracking
-                this.keysStateMap = { KeyW: false, KeyA: false, KeyS: false, KeyD: false, Space: false };
-                
-                // Camera Angle Transformations
-                this.angleYaw = 0;
-                this.anglePitch = 0;
-                
-                // Interpolation Destination Buffers (Prevents jitter artifacts)
-                this.targetAngleYaw = 0;
-                this.targetAnglePitch = 0;
-                this.smoothingDampFactor = 0.16; // Pure linear exponential tracking dampener
-
-                // Decoupled Mobile Gesture Pointer Configurations
-                this.activePointerIdMove = null;
-                this.originPointMove = new THREE.Vector2();
-                this.translationScalarVector = new THREE.Vector2();
-
-                this.activePointerIdLook = null;
-                this.lastRecordedPointLook = new THREE.Vector2();
-
-                this.mapDeviceHardwareEvents();
-            }
-
-            bindPointerLockContext() {
-                if (window.innerWidth > 1024) {
-                    document.body.requestPointerLock = document.body.requestPointerLock || document.body.webkitRequestPointerLock;
-                    if (document.body.requestPointerLock) {
-                        document.body.requestPointerLock();
-                    }
-                }
-            }
-
-            mapDeviceHardwareEvents() {
-                // Keyboard Processing Filters
-                window.addEventListener('keydown', (e) => {
-                    if (document.activeElement === document.getElementById('chat-input-node')) {
-                        if (e.key === 'Enter') this.context.executeChatSubmissionFlow();
-                        return;
-                    }
-                    if (e.code in this.keysStateMap) this.keysStateMap[e.code] = true;
-                });
-
-                window.addEventListener('keyup', (e) => {
-                    if (e.code in this.keysStateMap) this.keysStateMap[e.code] = false;
-                });
-
-                // Desktop Mouse Rotation Mapping Intercepts
-                window.addEventListener('mousemove', (e) => {
-                    if (document.pointerLockElement === document.body || document.webkitPointerLockElement === document.body) {
-                        // Buffer rotation increments smoothly into tracking variables instead of hard snapping
-                        this.targetAngleYaw -= e.movementX * 0.0022;
-                        this.targetAnglePitch -= e.movementY * 0.0022;
-                        this.targetAnglePitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, this.targetAnglePitch));
-                    }
-                });
-
-                // Mouse Click Firing Route
-                window.addEventListener('mousedown', (e) => {
-                    if (this.context.activeState && document.pointerLockElement === document.body) {
-                        if (e.button === 0) this.context.player.executeWeaponReleaseSequence();
-                    }
-                });
-
-                // Interface Mode Tab Selection Controls
-                const selectionTabs = document.querySelectorAll('.tier-tab');
-                selectionTabs.forEach(tab => {
-                    tab.onclick = (e) => {
-                        selectionTabs.forEach(t => t.classList.remove('active'));
-                        e.target.classList.add('active');
-                        this.context.selectedCombatTier = e.target.getAttribute('data-tier');
-                    };
-                });
-
-                document.getElementById('btn-execute-deployment').onclick = () => this.context.executeDeploymentFlow();
-
-                // Establish Decoupled Multi-Touch Surface Event Triggers
-                const surfaceMove = document.getElementById('trackpad-move-boundary');
-                const surfaceLook = document.getElementById('trackpad-look-boundary');
-
-                // 1. Process Isolated Movement Interface Region
-                surfaceMove.addEventListener('pointerdown', (e) => {
-                    e.preventDefault();
-                    this.activePointerIdMove = e.pointerId;
-                    this.originPointMove.set(e.clientX, e.clientY);
-                    
-                    const visualHousing = document.getElementById('virtual-joystick-housing');
-                    visualHousing.style.left = `${e.clientX}px`;
-                    visualHousing.style.top = `${e.clientY}px`;
-                    visualHousing.style.display = 'block';
-                    
-                    document.getElementById('virtual-joystick-puck').style.transform = 'translate(0px, 0px)';
-                });
-
-                window.addEventListener('pointermove', (e) => {
-                    // Update movement vector tracking coordinates
-                    if (e.pointerId === this.activePointerIdMove) {
-                        const translationDelta = new THREE.Vector2(e.clientX, e.clientY).sub(this.originPointMove);
-                        const boundMaxLimit = 42;
-                        
-                        if (translationDelta.length() > boundMaxLimit) {
-                            translationDelta.setLength(boundMaxLimit);
-                        }
-                        
-                        document.getElementById('virtual-joystick-puck').style.transform = `translate(${translationDelta.x}px, ${translationDelta.y}px)`;
-                        this.translationScalarVector.set(translationDelta.x / boundMaxLimit, -(translationDelta.y / boundMaxLimit));
-                    }
-                    
-                    // Look Zone Trackpad Processor - Modifies rotation values without unexpected camera angle changes
-                    if (e.pointerId === this.activePointerIdLook) {
-                        const swipeIncrementX = e.clientX - this.lastRecordedPointLook.x;
-                        const swipeIncrementY = e.clientY - this.lastRecordedPointLook.y;
-                        
-                        this.lastRecordedPointLook.set(e.clientX, e.clientY);
-
-                        this.targetAngleYaw -= swipeIncrementX * 0.0045;
-                        this.targetAnglePitch -= swipeIncrementY * 0.0045;
-                        this.targetAnglePitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, this.targetAnglePitch));
-                    }
-                });
-
-                const tearDownJoystickInputs = (e) => {
-                    if (e.pointerId === this.activePointerIdMove) {
-                        this.activePointerIdMove = null;
-                        this.translationScalarVector.set(0, 0);
-                        document.getElementById('virtual-joystick-housing').style.display = 'none';
-                    }
-                };
-                surfaceMove.addEventListener('pointerup', tearDownJoystickInputs);
-                surfaceMove.addEventListener('pointercancel', tearDownJoystickInputs);
-
-                // 2. Process Isolated Viewport Rotation Region
-                surfaceLook.addEventListener('pointerdown', (e) => {
-                    e.preventDefault();
-                    this.activePointerIdLook = e.pointerId;
-                    this.lastRecordedPointLook.set(e.clientX, e.clientY);
-                });
-
-                const tearDownLookInputs = (e) => {
-                    if (e.pointerId === this.activePointerIdLook) {
-                        this.activePointerIdLook = null;
-                    }
-                };
-                surfaceLook.addEventListener('pointerup', tearDownLookInputs);
-                surfaceLook.addEventListener('pointercancel', tearDownLookInputs);
-
-                // Wire up standard mobile functional action nodes
-                document.getElementById('node-trigger-fire').onclick = () => this.context.player.executeWeaponReleaseSequence();
-                document.getElementById('node-trigger-jump').onclick = () => {
-                    this.keysStateMap.Space = true;
-                    setTimeout(() => { this.keysStateMap.Space = false; }, 40);
-                };
-                document.getElementById('node-trigger-swap').onclick = () => this.context.player.toggleActiveLoadoutSlot();
-                document.getElementById('node-trigger-medkit').onclick = () => this.context.player.consumeMedkitPayload();
-                document.getElementById('node-trigger-move').onclick = () => this.context.player.executeTierAbilityStrike();
-
-                document.getElementById('btn-action-respawn').onclick = () => this.context.player.triggerRespawnCycle();
-                document.getElementById('btn-action-leave').onclick = () => location.reload();
-            }
-
-            /**
-             * Linear Interpolation Rotation Smoothing Logic
-             * Mitigates rendering lag by decoupling hardware updates from target vectors
-             */
-            applyCameraDampingInterpolation() {
-                this.angleYaw += (this.targetAngleYaw - this.angleYaw) * this.smoothingDampFactor;
-                this.anglePitch += (this.targetAnglePitch - this.anglePitch) * this.smoothingDampFactor;
-
-                const matrixQuaternion = new THREE.Quaternion();
-                matrixQuaternion.setFromEuler(new THREE.Euler(this.anglePitch, this.angleYaw, 0, 'YXZ'));
-                this.context.camera.quaternion.copy(matrixQuaternion);
-            }
-        }
-
-        // --- LOCAL PLAYER CONTROLLER & LIFE-CYCLE MODULE ---
-        class LocalPlayerController {
-            constructor(coreContext) {
-                this.context = coreContext;
-                
-                // Instantiate fundamental vitals tracking models
-                this.health = EngineConfig.Vitals.MaxHP;
-                this.shield = EngineConfig.Vitals.MaxShield;
-                this.mana = EngineConfig.Vitals.MaxMana; // Tracking up to max analytical limit 200%
-                
-                this.coords = new THREE.Vector3(0, 8, 0);
-                this.velocity = new THREE.Vector3();
-                this.groundedFlag = false;
-                
-                this.inventoryMedkits = 1; // Strict lifetime cap asset constraint
-                this.weaponLoadoutSlots = [EngineConfig.Weapons.PISTOL, EngineConfig.Weapons.RIFLE];
-                this.activeWeaponIndex = 0;
-                this.lastFiredTimeInstance = 0;
-
-                // Healing Cooldown Multipliers
-                this.timeSinceLastDamageAccrued = 0;
-                this.timeAccumulatedRegenTick = 0;
-            }
-
-            get callsign() {
-                return document.getElementById('node-player-identity').value || "Survivor";
-            }
-
-            get activeWeapon() {
-                return this.weaponLoadoutSlots[this.activeWeaponIndex];
-            }
-
-            reinitializeStateData() {
-                this.health = EngineConfig.Vitals.MaxHP;
-                this.shield = EngineConfig.Vitals.MaxShield;
-                this.mana = EngineConfig.Vitals.MaxMana; // 200% complete fill mapping
-                this.inventoryMedkits = 1;
-                
-                this.coords.set(0, 20, 0);
-                this.velocity.set(0, 0, 0);
-                
-                document.getElementById('node-trigger-medkit').innerText = `MEDKIT (${this.inventoryMedkits})`;
-                document.getElementById('termination-modal').style.display = 'none';
-                this.refreshDashboardGauges();
-            }
-
-            evaluateFrameTransformation(deltaSeconds) {
-                if (this.health <= 0) return;
-
-                // 1. Process Translation Direction Calculations
-                const activeKeys = this.context.inputs.keysStateMap;
-                const dynamicAxes = this.context.inputs.translationScalarVector;
-                
-                let coordinateZ = 0;
-                let coordinateX = 0;
-
-                if (activeKeys.KeyW) coordinateZ += 1;
-                if (activeKeys.KeyS) coordinateZ -= 1;
-                if (activeKeys.KeyD) coordinateX += 1;
-                if (activeKeys.KeyA) coordinateX -= 1;
-
-                // Sync trackpad values if keyboard remains clear of entry inputs
-                if (coordinateZ === 0 && coordinateX === 0) {
-                    coordinateZ = dynamicAxes.y;
-                    coordinateX = dynamicAxes.x;
-                }
-
-                const orientationDirection = new THREE.Vector3(coordinateX, 0, -coordinateZ).normalize();
-                const viewEuler = new THREE.Euler(0, this.context.inputs.angleYaw, 0, 'YXZ');
-                orientationDirection.applyEuler(viewEuler);
-
-                this.velocity.x = orientationDirection.x * EngineConfig.Vitals.SpeedBase;
-                this.velocity.z = orientationDirection.z * EngineConfig.Vitals.SpeedBase;
-
-                // 2. Gravitational Physics Multiplier Loop
-                this.velocity.y -= 34.0 * deltaSeconds;
-                this.coords.addScaledVector(this.velocity, deltaSeconds);
-
-                // Lock tracking transformations exactly to coordinate matrix elevation points
-                const groundIntersectionHeight = this.context.resolveHeightAtCoordinate(this.coords.x, this.coords.z);
-                const baselineYOffsetHeight = groundIntersectionHeight + 2.6; // Anchor camera at character height
-
-                if (this.coords.y <= baselineYOffsetHeight) {
-                    this.coords.y = baselineYOffsetHeight;
-                    this.velocity.y = 0;
-                    this.groundedFlag = true;
-                } else {
-                    this.groundedFlag = false;
-                }
-
-                if (activeKeys.Space && this.groundedFlag) {
-                    this.velocity.y = 13.5; // Jump vertical velocity impulse force
-                    this.groundedFlag = false;
-                }
-
-                this.context.camera.position.copy(this.coords);
-
-                // 3. Process Healing System Updates
-                this.evaluatePassiveVitalsRegeneration(deltaSeconds);
-            }
-
-            evaluatePassiveVitalsRegeneration(deltaSeconds) {
-                const stepMilliseconds = deltaSeconds * 1000;
-                this.timeSinceLastDamageAccrued += stepMilliseconds;
-
-                if (this.timeSinceLastDamageAccrued >= EngineConfig.Vitals.RegenCooldownTime) {
-                    this.timeAccumulatedRegenTick += stepMilliseconds;
-                    if (this.timeAccumulatedRegenTick >= EngineConfig.Vitals.RegenTickPeriod) {
-                        
-                        // Regenerate structural health pools first
-                        if (this.health < EngineConfig.Vitals.MaxHP) {
-                            this.health = Math.min(EngineConfig.Vitals.MaxHP, this.health + EngineConfig.Vitals.RegenRate);
-                        }
-                        
-                        // Passive replenishment recovery mapping for the 200% mana stat bar
-                        if (this.mana < EngineConfig.Vitals.MaxMana) {
-                            this.mana = Math.min(EngineConfig.Vitals.MaxMana, this.mana + 10);
-                        }
-
-                        this.refreshDashboardGauges();
-                        this.timeAccumulatedRegenTick = 0;
-                    }
-                }
-            }
-
-            executeWeaponReleaseSequence() {
-                if (this.health <= 0) return;
-                const timeCurrent = performance.now();
-                if (timeCurrent - this.lastFiredTimeInstance < this.activeWeapon.interval) return;
-
-                this.lastFiredTimeInstance = timeCurrent;
-
-                const vectorLookForward = new THREE.Vector3();
-                this.context.camera.getWorldDirection(vectorLookForward);
-
-                // Fire slightly ahead of the camera lens bounding bounds
-                const vectorSpawnOrigin = this.coords.clone().addScaledVector(vectorLookForward, 1.6);
-
-                const instanceBullet = new PhysicalDodgeableProjectile(
-                    vectorSpawnOrigin, vectorLookForward, this.activeWeapon, true, this.context
-                );
-                this.context.projectilesList.push(instanceBullet);
-
-                // Route projectile activation metrics to network endpoints
-                if (this.context.socket && this.context.socket.connected) {
-                    this.context.socket.emit("projectile_discharge_event", {
-                        origin: { x: vectorSpawnOrigin.x, y: vectorSpawnOrigin.y, z: vectorSpawnOrigin.z },
-                        direction: { x: vectorLookForward.x, y: vectorLookForward.y, z: vectorLookForward.z },
-                        weaponProfile: this.activeWeapon
-                    });
-                }
-
-                // Smooth operational kickback rendering visual
-                gsap.fromTo(this.context.camera.position,
-                    { y: this.coords.y },
-                    { y: this.coords.y - 0.1, duration: 0.04, yoyo: true, repeat: 1 }
-                );
-            }
-
-            executeTierAbilityStrike() {
-                if (this.health <= 0) return;
-                
-                const variantTier = this.context.selectedCombatTier;
-                
-                // Verify activation resource cost parameters against current 200% mana storage pools
-                if (this.mana < 40) {
-                    this.context.pushSystemChatLog("ERROR: Inadequate Mana energy cells to route tactical move actions.");
-                    return;
-                }
-
-                this.mana -= 40;
-                this.refreshDashboardGauges();
-
-                this.context.pushSystemChatLog(`COMBAT: Initializing Ability sequence profile -> Tier Variant: [${variantTier.toUpperCase()}]`);
-
-                if (variantTier === "common") {
-                    // Sonic Wave Blast Field Definition
-                    this.instantiateVisualShockwaveRing(0xcbd5e1, 14);
-                } 
-                else if (variantTier === "rare") {
-                    // Rare tier triple capability branch: Execute Vortex Jump boost
-                    this.velocity.y = 19.0;
-                    this.groundedFlag = false;
-                    this.instantiateVisualShockwaveRing(0x3b82f6, 8);
-                } 
-                else if (variantTier === "legendary") {
-                    // Route complete 5-element script conditions
-                    this.executeLegendaryAbilityPipeline();
-                }
-            }
-
-            executeLegendaryAbilityPipeline() {
-                // Randomly cycles or sequence-triggers the five critical historic variables
-                const selectionArray = ["electro", "inferno", "deluge", "glacier", "topspeed"];
-                const pick = selectionArray[Math.floor(Math.random() * selectionArray.length)];
-                
-                const orientationGaze = new THREE.Vector3();
-                this.context.camera.getWorldDirection(orientationGaze);
-
-                this.context.pushSystemChatLog(`LEGENDARY ELEMENT TRIGGERED: -> [${pick.toUpperCase()}]`);
-
-                if (pick === "electro") {
-                    const profile = { name: "Electro Bolt", velocity: 130, damage: 45, diameter: 0.6, hue: 0x22d3ee };
-                    const bolt = new PhysicalDodgeableProjectile(this.coords.clone().addScaledVector(orientationGaze, 2), orientationGaze, profile, true, this.context);
-                    this.context.projectilesList.push(bolt);
-                } 
-                else if (pick === "inferno") {
-                    this.instantiateVisualShockwaveRing(0xeab308, 25);
-                    // Splash damage calculations targeting proximal bots
-                    this.context.opponentsList.forEach(bot => {
-                        if (this.coords.distanceTo(bot.meshContainerGroup.position) < 25) {
-                            bot.inflictStructuralDamage(40);
-                        }
-                    });
-                } 
-                else if (pick === "deluge") {
-                    const profile = { name: "Deluge Core", velocity: 20, damage: 35, diameter: 1.2, hue: 0x3b82f6 };
-                    const wave = new PhysicalDodgeableProjectile(this.coords.clone().addScaledVector(orientationGaze, 2), orientationGaze, profile, true, this.context);
-                    this.context.projectilesList.push(wave);
-                } 
-                else if (pick === "glacier") {
-                    // Spawns a real 3D block mesh directly in front of client view plane coordinates to act as temporary wall cover
-                    const wallGeo = new THREE.BoxGeometry(6, 5, 1.5);
-                    const wallMat = new THREE.MeshStandardMaterial({ color: 0x93c5fd, transparent: true, opacity: 0.75, roughness: 0.1 });
-                    const wallMesh = new THREE.Mesh(wallGeo, wallMat);
-                    
-                    const placementVector = this.coords.clone().addScaledVector(orientationGaze, 6);
-                    placementVector.y = this.context.resolveHeightAtCoordinate(placementVector.x, placementVector.z) + 2.5;
-                    wallMesh.position.copy(placementVector);
-                    
-                    this.context.scene.add(wallMesh);
-                    setTimeout(() => { this.context.scene.remove(wallMesh); wallGeo.dispose(); wallMat.dispose(); }, 7000);
-                } 
-                else if (pick === "topspeed") {
-                    // Apply instant acceleration scalar multiplication updates over time profiles via GSAP
-                    const internalRef = EngineConfig.Vitals;
-                    const baselineCache = internalRef.SpeedBase;
-                    internalRef.SpeedBase = baselineCache * 2.5;
-                    
-                    setTimeout(() => { internalRef.SpeedBase = baselineCache; }, 3500);
-                }
-            }
-
-            instantiateVisualShockwaveRing(hexColor, expansionBoundMax) {
-                const loopGeometry = new THREE.RingGeometry(0.2, 1, 16);
-                const loopMaterial = new THREE.MeshBasicMaterial({ color: hexColor, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
-                const loopMesh = new THREE.Mesh(loopGeometry, loopMaterial);
-                
-                loopMesh.position.copy(this.coords);
-                loopMesh.position.y = this.context.resolveHeightAtCoordinate(this.coords.x, this.coords.z) + 0.2;
-                loopMesh.rotation.x = Math.PI / 2;
-                this.context.scene.add(loopMesh);
-
-                gsap.to(loopMesh.scale, {
-                    x: expansionBoundMax, y: expansionBoundMax, z: expansionBoundMax, duration: 0.6,
-                    onComplete: () => {
-                        this.context.scene.remove(loopMesh);
-                        loopGeometry.dispose();
-                        loopMaterial.dispose();
-                    }
-                });
-            }
-
-            toggleActiveLoadoutSlot() {
-                this.activeWeaponIndex = (this.activeWeaponIndex + 1) % this.weaponLoadoutSlots.length;
-                document.getElementById('badge-ui-weapon').innerText = `WEAPON: ${this.activeWeapon.name.toUpperCase()}`;
-            }
-
-            consumeMedkitPayload() {
-                if (this.health <= 0) return;
-
-                // 1. Check Multi-Targeting Proximity Hooks (Give to Player mechanics)
-                let evaluatedPeerRecipient = null;
-                this.context.networkPeersMap.forEach((peerProxy) => {
-                    const rangeDistance = this.coords.distanceTo(peerProxy.proxyGroup.position);
-                    if (rangeDistance < 6.0) {
-                        evaluatedPeerRecipient = peerProxy;
-                    }
-                });
-
-                if (evaluatedPeerRecipient) {
-                    if (this.inventoryMedkits <= 0) {
-                        this.context.pushSystemChatLog("ERROR: Life-cap allotment empty. Unable to transfer resource cells.");
-                        return;
-                    }
-                    this.inventoryMedkits--;
-                    document.getElementById('node-trigger-medkit').innerText = `MEDKIT (${this.inventoryMedkits})`;
-                    
-                    if (this.context.socket && this.context.socket.connected) {
-                        this.context.socket.emit("transfer_healing_payload", { recipientId: evaluatedPeerRecipient.networkId });
-                    }
-                    this.context.pushSystemChatLog(` ✨ DISTRIBUTED MEDKIT: Delivered vital healing compounds to target unit: ${evaluatedPeerRecipient.playerName}`);
-                    return;
-                }
-
-                // 2. Fallback execution path: Apply directly to self
-                if (this.health === EngineConfig.Vitals.MaxHP) return;
-                if (this.inventoryMedkits <= 0) {
-                    this.context.pushSystemChatLog("ERROR: Life-cap configuration limit spent. Medkits allow only one lifecycle routing action.");
-                    return;
-                }
-
-                this.health = EngineConfig.Vitals.MaxHP;
-                this.inventoryMedkits--;
-                
-                document.getElementById('node-trigger-medkit').innerText = `MEDKIT (${this.inventoryMedkits})`;
-                this.refreshDashboardGauges();
-                this.context.pushSystemChatLog("✨ MEDIC SELF-APPLICATION: Structural health parameters maxed.");
-            }
-
-            inflictStructuralDamage(damageVolume) {
-                this.timeSinceLastDamageAccrued = 0; // Break passive baseline recovery sequencing clocks instantly
-
-                if (this.shield > 0) {
-                    this.shield -= damageVolume;
-                    if (this.shield < 0) {
-                        this.health += this.shield; // Route overflowing negative values to physical health layer
-                        this.shield = 0;
-                    }
-                } else {
-                    this.health -= damageVolume;
-                }
-
-                this.refreshDashboardGauges();
-
-                if (this.health <= 0) {
-                    this.executeTerminationSequence();
-                }
-            }
-
-            refreshDashboardGauges() {
-                const ratioHP = Math.max(0, (this.health / EngineConfig.Vitals.MaxHP) * 100);
-                const ratioSH = Math.max(0, (this.shield / EngineConfig.Vitals.MaxShield) * 100);
-                
-                // Track current state mapping scaled perfectly across the analytical 200% maximum value line
-                const ratioMN = Math.max(0, (this.mana / EngineConfig.Vitals.MaxMana) * 100);
-
-                document.getElementById('bar-display-hp').style.width = `${ratioHP}%`;
-                document.getElementById('bar-display-sh').style.width = `${ratioSH}%`;
-                document.getElementById('bar-display-mn').style.width = `${ratioMN}%`;
-            }
-
-            executeTerminationSequence() {
-                this.health = 0;
-                this.refreshDashboardGauges();
-                document.exitPointerLock();
-                document.getElementById('termination-modal').style.display = 'flex';
-            }
-
-            triggerRespawnCycle() {
-                this.reinitializeStateData();
-                this.context.inputs.bindPointerLockContext();
-            }
-        }
-
-        // --- REAL-TIME PHYSICAL DODGEABLE PROJECTILE SYSTEM ---
-        class PhysicalDodgeableProjectile {
-            constructor(vectorSpawn, vectorDirection, configSpecs, sourceIsLocalPlayer, coreContext) {
-                this.context = coreContext;
-                this.sourceIsLocalPlayer = sourceIsLocalPlayer;
-                this.velocityScale = configSpecs.velocity;
-                this.potentialDamage = configSpecs.damage;
-                
-                this.normalizedTrajectory = vectorDirection.clone().normalize();
-                this.expiredStateFlag = false;
-                this.totalSurvivalLifespan = 0;
-
-                // Build Visible Projectile Telemetry Shapes
-                const radiusSize = configSpecs.diameter;
-                const geometricHull = new THREE.SphereGeometry(radiusSize, 5, 5);
-                const baseMaterial = new THREE.MeshBasicMaterial({
-                    color: configSpecs.hue,
-                    fog: false
-                });
-
-                this.projectileMeshNode = new THREE.Mesh(geometricHull, baseMaterial);
-                this.projectileMeshNode.position.copy(vectorSpawn);
-                this.context.scene.add(this.projectileMeshNode);
-            }
-
-            advanceProjectileFlightTime(deltaSeconds) {
-                this.totalSurvivalLifespan += deltaSeconds;
-                
-                // Set boundary limit at 3.0 seconds flight execution age
-                if (this.totalSurvivalLifespan > 3.0) {
-                    this.garbageCollectVisualObjects();
-                    return;
-                }
-
-                const vectorStepIncrement = this.normalizedTrajectory.clone().multiplyScalar(this.velocityScale * deltaSeconds);
-                this.projectileMeshNode.position.add(vectorStepIncrement);
-
-                this.detectCollisionIntersections();
-            }
-
-            detectCollisionIntersections() {
-                const vectorCurrentPosition = this.projectileMeshNode.position;
-
-                if (this.sourceIsLocalPlayer) {
-                    // Check intersections mapping against AI opponent groups
-                    for (let bot of this.context.opponentsList) {
-                        if (bot.currentHealth > 0 && vectorCurrentPosition.distanceTo(bot.meshContainerGroup.position) < 2.3) {
-                            bot.inflictStructuralDamage(this.potentialDamage);
-                            this.garbageCollectVisualObjects();
-                            return;
-                        }
-                    }
-
-                    // Check intersections mapping against online player nodes stored inside state charts
-                    this.context.networkPeersMap.forEach((peerProxy) => {
-                        if (vectorCurrentPosition.distanceTo(peerProxy.proxyGroup.position) < 2.4) {
-                            // Inform proxy channels locally of hit confirmation loops if server architecture allows
-                            this.garbageCollectVisualObjects();
-                        }
-                    });
-                } else {
-                    // Check intersection conditions target mapping local client positioning matrix bounds
-                    const structuralDistance = vectorCurrentPosition.distanceTo(this.context.player.coords);
-                    if (structuralDistance < 2.0) {
-                        this.context.player.inflictStructuralDamage(this.potentialDamage);
-                        this.garbageCollectVisualObjects();
-                    }
-                }
-
-                // Check surface clipping constraints mapping exactly to slope profiles
-                const localGroundHeightFloor = this.context.resolveHeightAtCoordinate(vectorCurrentPosition.x, vectorCurrentPosition.z);
-                if (vectorCurrentPosition.y <= localGroundHeightFloor) {
-                    this.garbageCollectVisualObjects();
-                }
-            }
-
-            garbageCollectVisualObjects() {
-                this.expiredStateFlag = true;
-                this.context.scene.remove(this.projectileMeshNode);
-                this.projectileMeshNode.geometry.dispose();
-                this.projectileMeshNode.material.dispose();
-            }
-        }
-
-        // --- MANAGED WORLD ENVIRONMENT BOT ENTIRE LOGIC ---
-        class ManagedAIEnemy {
-            constructor(botIdentifier, vectorSpawnCoordinate, coreContext) {
-                this.context = coreContext;
-                this.botId = botIdentifier;
-                
-                // Balanced health pools to maintain rewarding combat speed loops
-                this.maxHealthCapacity = 50;
-                this.currentHealth = this.maxHealthCapacity;
-                
-                this.patrolOriginPoint = vectorSpawnCoordinate.clone();
-                this.navigationDestinationTarget = vectorSpawnCoordinate.clone();
-                this.aiDecisionTimerClock = Math.random() * 1.5;
-                this.lastAttackTimestamp = 0;
-
-                this.assembleBotVisualHierarchy(vectorSpawnCoordinate);
-            }
-
-            assembleBotVisualHierarchy(spawnVector) {
-                this.meshContainerGroup = new THREE.Group();
-                this.meshContainerGroup.position.copy(spawnVector);
-
-                // Setup armor plating geometry profile parameters
-                const structuralChassisBox = new THREE.Mesh(
-                    new THREE.BoxGeometry(1.8, 3.4, 1.8),
-                    new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.6 }) // Aggressive Red identification marker
-                );
-                structuralChassisBox.position.y = 1.7;
-                structuralChassisBox.castShadow = true;
-                this.meshContainerGroup.add(structuralChassisBox);
-
-                // Add orientation guidance illumination visors to aid tactical tracking
-                const guidanceVisorBar = new THREE.Mesh(
-                    new THREE.BoxGeometry(1.4, 0.35, 0.4),
-                    new THREE.MeshBasicMaterial({ color: 0xfacc15 })
-                );
-                guidanceVisorBar.position.set(0, 2.7, 0.92);
-                this.meshContainerGroup.add(guidanceVisorBar);
-
-                this.context.scene.add(this.meshContainerGroup);
-            }
-
-            processAIFrameExecution(deltaSeconds) {
-                if (this.currentHealth <= 0) return;
-
-                this.aiDecisionTimerClock += deltaSeconds;
-                const distanceTrackingToClient = this.meshContainerGroup.position.distanceTo(this.context.player.coords);
-
-                // Run navigation calculations on precise 2.0 second intervals
-                if (this.aiDecisionTimerClock > 2.0) {
-                    this.aiDecisionTimerClock = 0;
-                    if (distanceTrackingToClient > 50) {
-                        // Generate random coordinate positions around home point configurations
-                        const varianceAngle = Math.random() * Math.PI * 2;
-                        const movementRadiusDistance = 12;
-                        this.navigationDestinationTarget.set(
-                            this.patrolOriginPoint.x + Math.cos(varianceAngle) * movementRadiusDistance,
-                            0,
-                            this.patrolOriginPoint.z + Math.sin(varianceAngle) * movementRadiusDistance
-                        );
-                        this.navigationDestinationTarget.y = this.context.resolveHeightAtCoordinate(this.navigationDestinationTarget.x, this.navigationDestinationTarget.z);
-                    } else {
-                        // Redirect navigation tracking matrix pathways directly toward target client
-                        this.navigationDestinationTarget.copy(this.context.player.coords);
-                    }
-                }
-
-                // Translate position coordinates toward buffered navigation targets
-                if (distanceTrackingToClient > 10) {
-                    const movementHeadingVector = new THREE.Vector3().subVectors(this.navigationDestinationTarget, this.meshContainerGroup.position);
-                    movementHeadingVector.y = 0;
-                    movementHeadingVector.normalize();
-
-                    const speedScalarVelocity = 5.5; // Balanced velocity calculation to prioritize tracking evasion play styles
-                    this.meshContainerGroup.position.addScaledVector(movementHeadingVector, speedScalarVelocity * deltaSeconds);
-                    
-                    // Maintain absolute coordinate alignment matching terrain slopes perfectly
-                    this.meshContainerGroup.position.y = this.context.resolveHeightAtCoordinate(this.meshContainerGroup.position.x, this.meshContainerGroup.position.z);
-                    
-                    const rotationHeadingAngle = Math.atan2(movementHeadingVector.x, movementHeadingVector.z);
-                    this.meshContainerGroup.rotation.y = rotationHeadingAngle;
-                }
-
-                // Process attack actions matching verification distance rules
-                if (distanceTrackingToClient < 45 && this.context.player.health > 0) {
-                    this.evaluateAttackDischargeSequence();
-                }
-            }
-
-            evaluateAttackDischargeSequence() {
-                const timestampCurrent = performance.now();
-                // Balanced fire delay: 2000ms cooldown windows between slower dodgeable bullets
-                if (timestampCurrent - this.lastAttackTimestamp < 2000) return;
-
-                this.lastAttackTimestamp = timestampCurrent;
-
-                const vectorHeadingToClient = new THREE.Vector3().subVectors(
-                    this.context.player.coords,
-                    this.meshContainerGroup.position
-                );
-                
-                // Apply spatial dispersion variance so that client strafe maneuvers function as design-intended counterplay
-                vectorHeadingToClient.x += (Math.random() - 0.5) * 4.0;
-                vectorHeadingToClient.z += (Math.random() - 0.5) * 4.0;
-                vectorHeadingToClient.normalize();
-
-                const outputBarrelPosition = this.meshContainerGroup.position.clone().add(new THREE.Vector3(0, 2.4, 0));
-                
-                const configurationRules = {
-                    velocity: 22, // Slow physical speed matrix allowing visual reading and positioning counters
-                    damage: 12,
-                    hue: 0xef4444 // Intense red sphere identifier tracking bullet alerts
-                };
-
-                const projectileObj = new PhysicalDodgeableProjectile(
-                    outputBarrelPosition, vectorHeadingToClient, configurationRules, false, this.context
-                );
-                this.context.projectilesList.push(projectileObj);
-            }
-
-            inflictStructuralDamage(damageVolume) {
-                this.currentHealth -= damageVolume;
-                
-                const targetMeshMaterial = this.meshContainerGroup.children[0].material;
-                const baselineHexColorCache = targetMeshMaterial.color.getHex();
-                
-                // Inject instant high-contrast structural damage registration flashes
-                targetMeshMaterial.color.setHex(0xffffff);
-                setTimeout(() => {
-                    if (this.currentHealth > 0) targetMeshMaterial.color.setHex(baselineHexColorCache);
-                }, 70);
-
-                if (this.currentHealth <= 0) {
-                    this.executeDespawnDisintegration();
-                }
-            }
-
-            executeDespawnDisintegration() {
-                gsap.to(this.meshContainerGroup.scale, {
-                    x: 0, y: 0, z: 0,
-                    duration: 0.35,
-                    onComplete: () => {
-                        this.context.scene.remove(this.meshContainerGroup);
-                        this.context.opponentsList = this.context.opponentsList.filter(instance => instance !== this);
-                        this.context.pushSystemChatLog(`🎯 BOUNTY RECORDED: Opponent target [${this.botId}] has been neutralized.`);
-                    }
-                });
-            }
-        }
-
-        // --- REMOTE PEER DATA PROXY REPRESENTATION CONTAINER ---
-        class RemotePeerNetworkProxy {
-            constructor(peerSocketId, analyticalCallsign, coreContext) {
-                this.context = coreContext;
-                this.networkId = peerSocketId;
-                this.playerName = analyticalCallsign;
-
-                // Track buffer coordinates for smooth network positioning transitions
-                this.bufferedPosition = new THREE.Vector3(0, 0, 0);
-                this.bufferedRotationYaw = 0;
-
-                this.buildVisualProxyMeshNodes();
-            }
-
-            buildVisualProxyMeshNodes() {
-                this.proxyGroup = new THREE.Group();
-                
-                const proxyChassis = new THREE.Mesh(
-                    new THREE.BoxGeometry(2, 3.4, 2),
-                    new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.4 }) // Distinct blue team identification hue
-                );
-                proxyChassis.position.y = 1.7;
-                this.proxyGroup.add(proxyChassis);
-
-                const proxyGazeVisor = new THREE.Mesh(
-                    new THREE.BoxGeometry(1.5, 0.3, 0.4),
-                    new THREE.MeshBasicMaterial({ color: 0x22c55e })
-                );
-                proxyGazeVisor.position.set(0, 2.6, 1.02);
-                this.proxyGroup.add(proxyGazeVisor);
-
-                this.context.scene.add(this.proxyGroup);
-            }
-
-            bufferTargetNetworkPacket(packetSnapshot) {
-                if (packetSnapshot.coords) {
-                    this.bufferedPosition.set(packetSnapshot.coords.x, packetSnapshot.coords.y, packetSnapshot.coords.z);
-                }
-                if (packetSnapshot.yaw !== undefined) {
-                    this.bufferedRotationYaw = packetSnapshot.yaw;
-                }
-            }
-
-            renderFrameInterpolation(deltaSeconds) {
-                // Apply linear interpolation filtering to prevent packet stepping jitter anomalies
-                this.proxyGroup.position.lerp(this.bufferedPosition, 0.25);
-                
-                // Handle smooth angular orientation matching network states
-                const varianceDifference = this.bufferedRotationYaw - this.proxyGroup.rotation.y;
-                this.proxyGroup.rotation.y += varianceDifference * 0.25;
-            }
-
-            destroyVisualMeshObjects() {
-                this.context.scene.remove(this.proxyGroup);
-            }
-        }
-
-        // --- SYSTEM ENGINE HARDWARE BOOTSTRAP EXECUTOR ---
-        const CoreSimulationEngineInstance = new CentralSimulationEngine();
-        window.onload = () => {
-            CoreSimulationEngineInstance.initializeSimulationSpace();
-        };
-    </script>
-</body>
-</html>
+        // ================= END OF PART 1 =================
